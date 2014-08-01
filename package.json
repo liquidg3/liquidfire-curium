@@ -1,0 +1,8 @@
+{
+    "name":         "liquidfire:Curium",
+    "version":      "0.0.1",
+    "description":  "Put your description in here!",
+    "dependencies": {
+        "openvg-canvas": "1.1.7"
+    }
+}
