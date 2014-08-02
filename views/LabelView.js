@@ -8,11 +8,11 @@ define(['altair/facades/declare',
     return declare([View], {
 
 
-        text:    '',
-        font:    '12px serif',
-        textColor: '#000',
-        textAlign: 'left',
-        verticalAlign: 'bottom', //bottom|middle|alphabetic
+        text:           '',
+        font:           '12px serif',
+        textColor:      '#000',
+        textAlign:      'left',
+        verticalAlign:  'bottom', //bottom|middle|alphabetic
 
         render: function (context) {
 
