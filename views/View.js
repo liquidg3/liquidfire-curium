@@ -22,6 +22,8 @@ define(['altair/facades/declare',
         alpha:              1,
         superView:          null,
         autorestoreContext: true,
+        vc:                 null,           //set by the creating view controller
+
         _subViews:  null,
         _animators: null,
         _frameCache: null,
@@ -63,11 +65,13 @@ define(['altair/facades/declare',
             context.globalAlpha = this.alpha;
 
             //clipping
-            if (this.clipping){
+            if (this.clipping) {
+
                 // Create a shape, of some sort//we should account for border size, border radius.
                 context.beginPath();
 
                 if( this.borderRadius ){
+
                     context.moveTo(this.frame.left+this.borderRadius, this.frame.top);
 
                     //top line
