@@ -28,11 +28,15 @@ define(['altair/facades/declare',
 //                this.frame.height = context.measureText(this.text).height;
 //            }
 
-            console.log(this.height, context.measureText(this.text));
-this.backgroundColor = '#000';
+            //console.log(this.height, context.measureText(this.text));
+
+
+            this.backgroundColor = '#000';
+
+
             //draw the frame's background color first.
             context.fillStyle = this.backgroundColor;
-            context.fillRect( this.frame.top, this.frame.left, this.frame.width, this.frame.heiht );
+            context.fillRect( this.frame.top, this.frame.left, this.frame.width, this.frame.height );
 
             context.textAlign    = this.textAlign; //left | right | center
             context.textBaseline = this.verticalAlign;
@@ -50,7 +54,7 @@ this.backgroundColor = '#000';
 
             context.clip();
 
-            console.log(this.verticalAlign);
+            //console.log(this.verticalAlign);
 
             var textPositionX = this.frame.left;
             var textPositionY = this.frame.top;
