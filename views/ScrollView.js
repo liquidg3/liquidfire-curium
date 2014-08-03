@@ -19,7 +19,7 @@ define(['altair/facades/declare',
 
             this.deferred = this.vc.forgeView({
                 frame: this.frame,
-                backgroundColor: '#ccc'
+                backgroundColor: '#00f'
             }).then(function (view) {
 
                 this.contentView = view;
@@ -30,6 +30,19 @@ define(['altair/facades/declare',
             }.bind(this));
 
             return this.inherited(arguments);
+        },
+
+        addSubView: function (view) {
+
+            if (!this.contentView) {
+
+               return this.inherited(arguments);
+
+            } else {
+
+                return this.contentView.addSubView(view)
+
+            }
         },
 
         calculatedContentFrame: function () {
@@ -44,6 +57,11 @@ define(['altair/facades/declare',
 
             return frame;
 
+        },
+
+        render: function () {
+            this.contentView.frame = this.calculatedContentFrame();
+            this.inherited(arguments);
         }
 
 
