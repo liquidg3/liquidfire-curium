@@ -20,41 +20,12 @@ define(['altair/facades/declare',
         verticalAlign:  'bottom', //bottom|middle|alphabetic
 
         render: function (context) {
-
             this.inherited(arguments);
-
-            //if height is zero, set the height of the frame.
-//            if( !this.height ){
-//                this.frame.height = context.measureText(this.text).height;
-//            }
-
-            //console.log(this.height, context.measureText(this.text));
-
-
-            this.backgroundColor = '#000';
-
-
-            //draw the frame's background color first.
-            context.fillStyle = this.backgroundColor;
-            context.fillRect( this.frame.top, this.frame.left, this.frame.width, this.frame.height );
 
             context.textAlign    = this.textAlign; //left | right | center
             context.textBaseline = this.verticalAlign;
             context.fillStyle    = this.textColor;
             context.font         = this.font;
-
-            context.save();
-
-            // Create a shape, of some sort
-            context.beginPath();
-            context.moveTo(this.frame.left, this.frame.top);
-            context.lineTo(this.frame.left +this.frame.width, this.frame.top);
-            context.lineTo(this.frame.left +this.frame.width, this.frame.top    +this.frame.height);
-            context.lineTo(this.frame.left, this.frame.top   +this.frame.height);
-
-            context.clip();
-
-            //console.log(this.verticalAlign);
 
             var textPositionX = this.frame.left;
             var textPositionY = this.frame.top;

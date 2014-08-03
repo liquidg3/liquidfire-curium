@@ -1,14 +1,12 @@
 define(['altair/facades/declare',
     'altair/mixins/_DeferredMixin',
     'altair/mixins/_AssertMixin',
-    'altair/facades/mixin',
     'dojo/_base/lang',
     'altair/plugins/node!tween.js',
     'lodash'
 ], function (declare,
              _DeferredMixin,
              _AssertMixin,
-             mixin,
              lang,
              tween,
              _) {
@@ -18,14 +16,16 @@ define(['altair/facades/declare',
 
         frame:              null,
         backgroundColor:    '#FFF',
-        borderWidth:        0,
+        borderWidth:        0,          //implicit pixel type
+        borderRadius:       0,          //implicit pixel type
+        clipping:           true,
         alpha:              1,
         superView:          null,
 
-        _subViews:      null,
-        _animators:     null,
-        _frameCache:    null,
-        _frame:         null,
+        _subViews:  null,
+        _animators: null,
+        _frameCache: null,
+        _frame:     null,
 
         constructor: function (options) {
 
@@ -35,12 +35,12 @@ define(['altair/facades/declare',
             this._subViews  = [];
             this._animators = [];
 
-            _options.frame = mixin({
+            this.frame = {
                 left: 0,
                 top: 0,
                 width: 0,
                 height: 0
-            }, _options.frame || {});
+            };
 
             //mixin options
             declare.safeMixin(this, _options);
@@ -48,7 +48,6 @@ define(['altair/facades/declare',
         },
 
         render: function (context, time) {
-
 
             _.each(this._animators, function (anim) {
                 anim.update(time);
@@ -59,6 +58,55 @@ define(['altair/facades/declare',
 
             //alpha
             context.globalAlpha = this.alpha;
+
+            //so we don't interfere with anyone else' drawing commands. (as a result, you must call context.restore() when you're done with the.
+            context.save();
+
+            //clipping
+            if (this.clipping){
+                // Create a shape, of some sort//we should account for border size, border radius.
+                context.beginPath();
+
+                if( this.borderRadius ){
+                    context.moveTo(this.frame.left+this.borderRadius, this.frame.top);
+
+                    //top line
+                    context.lineTo(this.frame.left+this.frame.width-this.borderRadius, this.frame.top);
+
+                    //top right corner arc
+                    context.arcTo(this.frame.left+this.frame.width, this.frame.top, this.frame.left+this.frame.width, this.frame.top+this.borderRadius, this.borderRadius);
+
+                    //right line
+                    context.lineTo(this.frame.left+this.frame.width, this.frame.top+this.frame.height-this.borderRadius);
+
+                    //bottom right corner arc
+                    context.arcTo(this.frame.left+this.frame.width, this.frame.top+this.frame.height, this.frame.left+this.frame.width-this.borderRadius, this.frame.top+this.frame.height, this.borderRadius);
+
+                    //bottom line
+                    context.lineTo(this.frame.left+this.borderRadius, this.frame.top+this.frame.height);
+
+                    //bottom left arc
+                    context.arcTo(this.frame.left, this.frame.top+this.frame.height, this.frame.left, this.frame.top+this.frame.height-this.borderRadius, this.borderRadius);
+
+                    //left line
+                    context.lineTo(this.frame.left, this.frame.top+this.borderRadius);
+
+                    //top left arc
+                    context.arcTo(this.frame.left, this.frame.top, this.frame.left+this.borderRadius, this.frame.top, this.borderRadius);
+
+                } else {
+                    //just the box
+                    context.moveTo(this.frame.left, this.frame.top);
+                    context.lineTo(this.frame.left+ this.frame.width, this.frame.top);
+                    context.lineTo(this.frame.left+ this.frame.width, this.frame.top+    this.frame.height);
+                    context.lineTo(this.frame.left, this.frame.top+   this.frame.height);
+
+                }
+
+                context.clip();
+
+            }
+
 
             //background color
             if (this.backgroundColor && this.backgroundColor !== 'transparent') {
@@ -88,6 +136,7 @@ define(['altair/facades/declare',
             _.each(this._subViews, function (view) {
                 view.render(context, time);
             }, this);
+
 
 
         },
