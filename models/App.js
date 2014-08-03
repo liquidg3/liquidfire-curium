@@ -46,16 +46,17 @@ define(['altair/facades/declare',
 
         forgeController: function (named, options) {
 
-            var p = path.join(this.vcDir, 'viewcontrollers', named),
+            var p   = path.join(this.vcDir, 'viewcontrollers', named),
                 dir = this.vcDir;
-
 
             return this.forge(p, options, {
                 foundry: function (Class, options, config) {
+
                     return config.defaultFoundry(Class, options, config).then(function (controller) {
                         controller.dir = dir;
                         return controller;
                     });
+
                 }
             });
 

@@ -1,12 +1,14 @@
 define(['altair/facades/declare',
     'altair/mixins/_DeferredMixin',
     'altair/mixins/_AssertMixin',
+    'altair/facades/mixin',
     'dojo/_base/lang',
     'altair/plugins/node!tween.js',
     'lodash'
 ], function (declare,
              _DeferredMixin,
              _AssertMixin,
+             mixin,
              lang,
              tween,
              _) {
@@ -20,10 +22,10 @@ define(['altair/facades/declare',
         alpha:              1,
         superView:          null,
 
-        _subViews:  null,
-        _animators: null,
-        _frameCache: null,
-        _frame:     null,
+        _subViews:      null,
+        _animators:     null,
+        _frameCache:    null,
+        _frame:         null,
 
         constructor: function (options) {
 
@@ -33,12 +35,12 @@ define(['altair/facades/declare',
             this._subViews  = [];
             this._animators = [];
 
-            this.frame = {
+            _options.frame = mixin({
                 left: 0,
                 top: 0,
                 width: 0,
                 height: 0
-            };
+            }, _options.frame || {});
 
             //mixin options
             declare.safeMixin(this, _options);
@@ -46,6 +48,7 @@ define(['altair/facades/declare',
         },
 
         render: function (context, time) {
+
 
             _.each(this._animators, function (anim) {
                 anim.update(time);
