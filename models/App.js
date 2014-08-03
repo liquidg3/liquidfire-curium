@@ -76,6 +76,7 @@ define(['altair/facades/declare',
         },
 
         renderFrame: function (time) {
+
             this.animationHandle = requestAnimationFrame(this.hitch('renderFrame'));
             this.rootViewController.render(this.context, time);
 
