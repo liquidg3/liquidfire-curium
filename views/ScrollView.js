@@ -42,13 +42,32 @@ define(['altair/facades/declare',
 
             if (this.contentView) {
 
+
                 return this.contentView.addSubView(view)
 
             } else {
 
+                view.isSubViewVisible = this.hitch(function (view) {
+
+                    return this.isSubViewVisible({
+                        frame: {
+                               left: view.frame.left + this.contentOffset.left,
+                               top: view.frame.top + this.contentOffset.top,
+                               width: view.frame.width,
+                               height: view.frame.height
+                        }
+                    });
+
+                });
+
                 return this.inherited(arguments);
 
             }
+        },
+
+
+        setLeftScroll: function (percent) {
+            this.contentOffset.left = (this.contentView.frame.width - this.frame.width) * percent * -1;
         },
 
         calculatedContentFrame: function () {
@@ -65,7 +84,7 @@ define(['altair/facades/declare',
 
         },
 
-        scrollTo: function (offset, duration) {
+        scrollTo: function (offset, duration, options) {
 
             var _offset = _.merge({
                 top: this.contentOffset.top,
@@ -76,10 +95,10 @@ define(['altair/facades/declare',
                 duration = 500;
             }
 
-            this.animateProperties({
+            return this.animateProperties({
                 'contentOffset.top': _offset.top,
                 'contentOffset.left': _offset.left
-            }, duration)
+            }, duration, options)
 
         },
 

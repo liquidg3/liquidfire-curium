@@ -59,7 +59,7 @@ define(['altair/facades/declare',
             });
 
             var drawBorder  = false,
-                frame       = this.calculatedFrame();
+                frame       = this.globalFrame();
 
             //alpha
             context.globalAlpha = this.alpha;
@@ -139,7 +139,7 @@ define(['altair/facades/declare',
             }
 
             _.each(this._subViews, function (view) {
-                if(this.isSubViewIsVisible(view)) {
+                if(this.isSubViewVisible(view)) {
                     view.render(context, time);
                 }
             }, this);
@@ -151,10 +151,10 @@ define(['altair/facades/declare',
 
         },
 
-        isSubViewIsVisible: function (view) {
+        isSubViewVisible: function (view, _myBounds) {
 
             var frame = view.frame,
-                myBounds = {
+                myBounds = _myBounds || {
                     left: 0,
                     top: 0,
                     width: this.frame.width,
@@ -166,7 +166,7 @@ define(['altair/facades/declare',
                 return false;
             }
             //too far left
-            else if(frame.left + frame.right < myBounds.left) {
+            else if(frame.left + frame.width < myBounds.left) {
                 return false;
             }
             //top far right
@@ -174,7 +174,7 @@ define(['altair/facades/declare',
                 return false;
             }
             //too far below
-            else if(frame.top + frame.height > myBounds.top + myBounds.height) {
+            else if(frame.top > myBounds.top + myBounds.height) {
                 return false;
             }
 
@@ -209,10 +209,10 @@ define(['altair/facades/declare',
             return this.animateProperties(options, duration || 500);
         },
 
-        calculatedFrame: function () {
+        globalFrame: function () {
 
             var frame = _.clone(this.frame),
-                parentFrame = this.superView ? this.superView.calculatedFrame() : null;
+                parentFrame = this.superView ? this.superView.globalFrame() : null;
 
             if(parentFrame) {
                 frame.top += parentFrame.top;
@@ -222,29 +222,45 @@ define(['altair/facades/declare',
             return frame;
         },
 
-        animateProperties: function (properties, duration) {
+        animateProperties: function (properties, duration, options) {
 
             var from = {},
-                dfd = new this.Deferred(),
-                to = properties,
-                _duration = duration || 500,
-                view      = this,
+                dfd         = new this.Deferred(),
+                to          = properties,
+                _duration   = duration || 500,
+                view        = this,
+                _options    = options || {},
                 anim;
 
+            if(_.isObject(_duration)) {
+                _options = _duration;
+                _duration = _options.duration || 500;
+            }
 
             _.each(properties, function (value, key) {
                 from[key] = lang.getObject(key, false, this);
             }, this);
 
             anim = new tween.Tween(from).to(to, _duration).onUpdate(function () {
+
                 _.each(from, function (value, key) {
                     lang.setObject(key, this[key], view);
                 }, this);
 
             }).onComplete(function () {
-                view._animators.splice(view._animators.indexOf(this));
+                view._animators.splice(view._animators.indexOf(anim), 1);
                 dfd.resolve(view);
             });
+
+            if(_options.easing) {
+
+                var easing = lang.getObject(_options.easing, false, tween.Easing);
+
+                if(easing) {
+                    anim.easing(easing);
+                }
+
+            }
 
             anim.start();
             this._animators.push(anim);
