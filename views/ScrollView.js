@@ -10,6 +10,7 @@ define(['altair/facades/declare',
     return declare([View, Lifecycle], {
 
         contentView: null,
+        clipping:    false,
         contentOffset: {
             top: 0,
             left: 0
@@ -18,12 +19,17 @@ define(['altair/facades/declare',
         startup: function () {
 
             this.deferred = this.vc.forgeView({
-                frame: this.frame,
-                backgroundColor: '#00f'
+                frame: _.clone(this.frame),
+                backgroundColor: 'transparent'
             }).then(function (view) {
 
+                this.addSubView(view);
                 this.contentView = view;
-                this.addSubView(this.contentView);
+
+                if(this.contentHeight) {
+                    this.contentView.frame.height = this.contentHeight;
+                    delete this.contentHeight;
+                }
 
                 return this;
 
@@ -34,13 +40,13 @@ define(['altair/facades/declare',
 
         addSubView: function (view) {
 
-            if (!this.contentView) {
+            if (this.contentView) {
 
-               return this.inherited(arguments);
+                return this.contentView.addSubView(view)
 
             } else {
 
-                return this.contentView.addSubView(view)
+                return this.inherited(arguments);
 
             }
         },
@@ -52,10 +58,28 @@ define(['altair/facades/declare',
 
             frame.height    = Math.max(frame.height, contentFrame.height);
             frame.width     = Math.max(frame.width, contentFrame.width);
-            frame.top       += this.contentOffset.top;
-            frame.left      += this.contentOffset.left;
+            frame.top       = this.contentOffset.top;
+            frame.left      = this.contentOffset.left;
 
             return frame;
+
+        },
+
+        scrollTo: function (offset, duration) {
+
+            var _offset = _.merge({
+                top: this.contentOffset.top,
+                left: this.contentOffset.left
+            }, offset);
+
+            if(!duration) {
+                duration = 500;
+            }
+
+            this.animateProperties({
+                'contentOffset.top': _offset.top,
+                'contentOffset.left': _offset.left
+            }, duration)
 
         },
 

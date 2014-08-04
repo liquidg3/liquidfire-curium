@@ -18,16 +18,15 @@ define(['altair/facades/declare',
         backgroundColor:    '#FFF',
         borderWidth:        0,          //implicit pixel type
         borderRadius:       0,          //implicit pixel type
-        clipping:           true,
+        clipping:           false,
         alpha:              1,
         superView:          null,
-        autorestoreContext: true,
+        autorestoreContext: false,
         vc:                 null,           //set by the creating view controller
 
-        _subViews:  null,
-        _animators: null,
-        _frameCache: null,
-        _frame:     null,
+        _subViews:          null,
+        _animators:         null,
+        _frameCache:        null,
 
         constructor: function (options) {
 
@@ -50,6 +49,7 @@ define(['altair/facades/declare',
         },
 
         render: function (context, time) {
+
             //so we don't interfere with anyone else' drawing commands. (as a result, you must call context.restore() when you're done with the.
             context.save();
 
@@ -72,43 +72,43 @@ define(['altair/facades/declare',
 
                 if( this.borderRadius ){
 
-                    context.moveTo(this.frame.left+this.borderRadius, this.frame.top);
+                    context.moveTo(frame.left+this.borderRadius, frame.top);
 
                     //top line
-                    context.lineTo(this.frame.left+this.frame.width-this.borderRadius, this.frame.top);
+                    context.lineTo(frame.left+frame.width-this.borderRadius, frame.top);
 
                     //top right corner arc
-                    context.arcTo(this.frame.left+this.frame.width, this.frame.top, this.frame.left+this.frame.width, this.frame.top+this.borderRadius, this.borderRadius);
+                    context.arcTo(frame.left+frame.width, frame.top, frame.left+frame.width, frame.top+this.borderRadius, this.borderRadius);
 
                     //right line
-                    context.lineTo(this.frame.left+this.frame.width, this.frame.top+this.frame.height-this.borderRadius);
+                    context.lineTo(frame.left+frame.width, frame.top+frame.height-this.borderRadius);
 
                     //bottom right corner arc
-                    context.arcTo(this.frame.left+this.frame.width, this.frame.top+this.frame.height, this.frame.left+this.frame.width-this.borderRadius, this.frame.top+this.frame.height, this.borderRadius);
+                    context.arcTo(frame.left+frame.width, frame.top+frame.height, frame.left+frame.width-this.borderRadius, frame.top+frame.height, this.borderRadius);
 
                     //bottom line
-                    context.lineTo(this.frame.left+this.borderRadius, this.frame.top+this.frame.height);
+                    context.lineTo(frame.left+this.borderRadius, frame.top+frame.height);
 
                     //bottom left arc
-                    context.arcTo(this.frame.left, this.frame.top+this.frame.height, this.frame.left, this.frame.top+this.frame.height-this.borderRadius, this.borderRadius);
+                    context.arcTo(frame.left, frame.top+frame.height, frame.left, frame.top+frame.height-this.borderRadius, this.borderRadius);
 
                     //left line
-                    context.lineTo(this.frame.left, this.frame.top+this.borderRadius);
+                    context.lineTo(frame.left, frame.top+this.borderRadius);
 
                     //top left arc
-                    context.arcTo(this.frame.left, this.frame.top, this.frame.left+this.borderRadius, this.frame.top, this.borderRadius);
+                    context.arcTo(frame.left, frame.top, frame.left+this.borderRadius, frame.top, this.borderRadius);
 
                 } else {
+
                     //just the box
-                    context.moveTo(this.frame.left, this.frame.top);
-                    context.lineTo(this.frame.left+ this.frame.width, this.frame.top);
-                    context.lineTo(this.frame.left+ this.frame.width, this.frame.top+    this.frame.height);
-                    context.lineTo(this.frame.left, this.frame.top+   this.frame.height);
+                    context.moveTo(frame.left, frame.top);
+                    context.lineTo(frame.left+ frame.width, frame.top);
+                    context.lineTo(frame.left+ frame.width, frame.top+    frame.height);
+                    context.lineTo(frame.left, frame.top+   frame.height);
 
                 }
 
                 context.clip();
-
 
             }
 
@@ -139,7 +139,9 @@ define(['altair/facades/declare',
             }
 
             _.each(this._subViews, function (view) {
-                view.render(context, time);
+                if(this.isSubViewIsVisible(view)) {
+                    view.render(context, time);
+                }
             }, this);
 
 
@@ -148,6 +150,38 @@ define(['altair/facades/declare',
             }
 
         },
+
+        isSubViewIsVisible: function (view) {
+
+            var frame = view.frame,
+                myBounds = {
+                    left: 0,
+                    top: 0,
+                    width: this.frame.width,
+                    height: this.frame.height
+                };
+
+            //outside the top
+            if (frame.top + frame.height < myBounds.top) {
+                return false;
+            }
+            //too far left
+            else if(frame.left + frame.right < myBounds.left) {
+                return false;
+            }
+            //top far right
+            else if(frame.left > myBounds.left + myBounds.width) {
+                return false;
+            }
+            //too far below
+            else if(frame.top + frame.height > myBounds.top + myBounds.height) {
+                return false;
+            }
+
+            return true;
+
+        },
+
 
         addSubView: function (view) {
             view.removeFromSuperView();
@@ -176,7 +210,16 @@ define(['altair/facades/declare',
         },
 
         calculatedFrame: function () {
-            return this.frame;
+
+            var frame = _.clone(this.frame),
+                parentFrame = this.superView ? this.superView.calculatedFrame() : null;
+
+            if(parentFrame) {
+                frame.top += parentFrame.top;
+                frame.left += parentFrame.left;
+            }
+
+            return frame;
         },
 
         animateProperties: function (properties, duration) {
