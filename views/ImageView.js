@@ -56,6 +56,7 @@ define(['altair/facades/declare',
             this.inherited(arguments);
 
             context.drawImage(this.image, this.frame.left, this.frame.top);
+
         }
 
     });

@@ -1,23 +1,43 @@
 define(['altair/facades/declare',
-        'altair/plugins/node!fs',
-        './View'
+    'altair/Lifecycle',
+    './View'
 ], function (declare,
-             fs,
+             LifeCycle,
              View) {
 
-    return declare([View], {
+    return declare([View, LifeCycle], {
 
         text:    '',
         font:    '12px serif',
         textColor: '#000',
         textAlign: 'left',
         verticalAlign: 'bottom', //bottom|middle|alphabetic
-        backgroundColor: '#FFA',
+        backgroundColor: '#000',//'#FFA',
         text:           '',
         font:           '12px serif',
         textColor:      '#000',
-        textAlign:      'left',
-        verticalAlign:  'bottom', //bottom|middle|alphabetic
+        textAlign:      'center',
+        verticalAlign:  'center', //bottom|middle|alphabetic
+        borderRadius: 10,
+
+        startup: function (options) {
+
+            var _options = options || this.options || {};
+
+            if (_options.text) {
+
+                this.setText(_options.text);
+
+            }
+
+            //mixin options
+            return this.inherited(arguments);
+
+        },
+
+        setText: function ( text ){
+
+        },
 
         render: function (context) {
             this.inherited(arguments);
@@ -57,12 +77,11 @@ define(['altair/facades/declare',
 
                 case 'center':
                     textPositionY = this.frame.top+(this.frame.height/2);
-
                     break;
             }
 
 
-            context.fillText(this.text, textPositionX, textPositionY, this.frame.width);
+            context.fillText(this.text, textPositionX, textPositionY);
 
             // Undo the clipping
             context.restore();

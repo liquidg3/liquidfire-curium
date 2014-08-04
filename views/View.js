@@ -21,6 +21,7 @@ define(['altair/facades/declare',
         clipping:           true,
         alpha:              1,
         superView:          null,
+        autorestoreContext: true,
         vc:                 null,           //set by the creating view controller
 
         _subViews:  null,
@@ -49,6 +50,9 @@ define(['altair/facades/declare',
         },
 
         render: function (context, time) {
+            //so we don't interfere with anyone else' drawing commands. (as a result, you must call context.restore() when you're done with the.
+            context.save();
+
 
             _.each(this._animators, function (anim) {
                 anim.update(time);
@@ -59,9 +63,6 @@ define(['altair/facades/declare',
 
             //alpha
             context.globalAlpha = this.alpha;
-
-            //so we don't interfere with anyone else' drawing commands. (as a result, you must call context.restore() when you're done with the.
-            context.save();
 
             //clipping
             if (this.clipping) {
@@ -108,6 +109,7 @@ define(['altair/facades/declare',
 
                 context.clip();
 
+
             }
 
 
@@ -141,6 +143,9 @@ define(['altair/facades/declare',
             }, this);
 
 
+            if( this.autorestoreContext ){
+                context.restore();
+            }
 
         },
 
