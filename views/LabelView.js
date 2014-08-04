@@ -1,7 +1,7 @@
 define(['altair/facades/declare',
-    'altair/Lifecycle',
-    './View'
-], function (declare,
+        'altair/Lifecycle',
+        './View'
+    ], function (declare,
              LifeCycle,
              View) {
 
@@ -9,19 +9,14 @@ define(['altair/facades/declare',
 
         text:    '',
         font:    '12px serif',
+        fontPath: undefined,
         textColor: '#000',
         textAlign: 'left',
-        verticalAlign: 'bottom', //bottom|middle|alphabetic
-        backgroundColor: '#000',//'#FFA',
-        text:           '',
-        font:           '12px serif',
-        textColor:      '#000',
-        textAlign:      'center',
-        verticalAlign:  'center', //bottom|middle|alphabetic
+        verticalAlign: 'center', //bottom|middle|alphabetic
+        backgroundColor: '#000',
         borderRadius: 10,
 
         startup: function (options) {
-
             var _options = options || this.options || {};
 
             if (_options.text) {
@@ -30,12 +25,27 @@ define(['altair/facades/declare',
 
             }
 
+            if (_options.fontPath) {
+
+                this.deferred = this.loadFont(_options.fontPath).then(function (font) {
+                    //@todo: work in progress
+
+                    return this;
+
+                }.bind(this));
+
+            }
+
             //mixin options
             return this.inherited(arguments);
 
         },
 
-        setText: function ( text ){
+        loadFont: function (fontPath) {
+
+        },
+
+        setText: function (text) {
 
         },
 
@@ -47,43 +57,43 @@ define(['altair/facades/declare',
             context.fillStyle    = this.textColor;
             context.font         = this.font;
 
-            var textPositionX = this.frame.left;
-            var textPositionY = this.frame.top;
+            var textPositionX = this.frame.left,
+                textPositionY = this.frame.top;
 
             this.textAlign = 'center';
 
             switch (this.textAlign) {
-                case 'left':
-                    textPositionX = this.frame.left;
-                    break;
+            case 'left':
+                textPositionX = this.frame.left;
+                break;
 
-                case 'right':
-                    textPositionX = this.frame.left+this.frame.width;
-                    break;
+            case 'right':
+                textPositionX = this.frame.left + this.frame.width;
+                break;
 
-                case 'center':
-                    textPositionX = this.frame.left+(this.frame.width/2);
-                    break;
+            case 'center':
+                textPositionX = this.frame.left + (this.frame.width / 2);
+                break;
             }
 
             switch (this.verticalAlign) {
-                case 'top':
-                    textPositionY = this.frame.top;
-                    break;
+            case 'top':
+                textPositionY = this.frame.top;
+                break;
 
-                case 'bottom':
-                    textPositionY = this.frame.top+this.frame.height;
-                    break;
+            case 'bottom':
+                textPositionY = this.frame.top + this.frame.height;
+                break;
 
-                case 'center':
-                    textPositionY = this.frame.top+(this.frame.height/2);
-                    break;
+            case 'center':
+                textPositionY = this.frame.top + (this.frame.height / 2);
+                break;
             }
 
 
             context.fillText(this.text, textPositionX, textPositionY);
 
-            // Undo the clipping
+            // Undo the clipping mask
             context.restore();
 
         }
