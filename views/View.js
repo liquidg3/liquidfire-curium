@@ -70,40 +70,40 @@ define(['altair/facades/declare',
                 // Create a shape, of some sort//we should account for border size, border radius.
                 context.beginPath();
 
-                if( this.borderRadius ){
+                if (this.borderRadius) {
 
-                    context.moveTo(this.frame.left+this.borderRadius, this.frame.top);
+                    context.moveTo(this.frame.left + this.borderRadius, this.frame.top);
 
                     //top line
-                    context.lineTo(this.frame.left+this.frame.width-this.borderRadius, this.frame.top);
+                    context.lineTo(this.frame.left + this.frame.width - this.borderRadius, this.frame.top);
 
                     //top right corner arc
-                    context.arcTo(this.frame.left+this.frame.width, this.frame.top, this.frame.left+this.frame.width, this.frame.top+this.borderRadius, this.borderRadius);
+                    context.arcTo(this.frame.left + this.frame.width, this.frame.top, this.frame.left + this.frame.width, this.frame.top + this.borderRadius, this.borderRadius);
 
                     //right line
-                    context.lineTo(this.frame.left+this.frame.width, this.frame.top+this.frame.height-this.borderRadius);
+                    context.lineTo(this.frame.left + this.frame.width, this.frame.top + this.frame.height - this.borderRadius);
 
                     //bottom right corner arc
-                    context.arcTo(this.frame.left+this.frame.width, this.frame.top+this.frame.height, this.frame.left+this.frame.width-this.borderRadius, this.frame.top+this.frame.height, this.borderRadius);
+                    context.arcTo(this.frame.left + this.frame.width, this.frame.top + this.frame.height, this.frame.left + this.frame.width - this.borderRadius, this.frame.top + this.frame.height, this.borderRadius);
 
                     //bottom line
-                    context.lineTo(this.frame.left+this.borderRadius, this.frame.top+this.frame.height);
+                    context.lineTo(this.frame.left + this.borderRadius, this.frame.top + this.frame.height);
 
                     //bottom left arc
-                    context.arcTo(this.frame.left, this.frame.top+this.frame.height, this.frame.left, this.frame.top+this.frame.height-this.borderRadius, this.borderRadius);
+                    context.arcTo(this.frame.left, this.frame.top + this.frame.height, this.frame.left, this.frame.top + this.frame.height - this.borderRadius, this.borderRadius);
 
                     //left line
-                    context.lineTo(this.frame.left, this.frame.top+this.borderRadius);
+                    context.lineTo(this.frame.left, this.frame.top + this.borderRadius);
 
                     //top left arc
-                    context.arcTo(this.frame.left, this.frame.top, this.frame.left+this.borderRadius, this.frame.top, this.borderRadius);
+                    context.arcTo(this.frame.left, this.frame.top, this.frame.left + this.borderRadius, this.frame.top, this.borderRadius);
 
                 } else {
                     //just the box
-                    context.moveTo(this.frame.left, this.frame.top);
-                    context.lineTo(this.frame.left+ this.frame.width, this.frame.top);
-                    context.lineTo(this.frame.left+ this.frame.width, this.frame.top+    this.frame.height);
-                    context.lineTo(this.frame.left, this.frame.top+   this.frame.height);
+                    context.moveTo(this.frame.left,  this.frame.top);
+                    context.lineTo(this.frame.left + this.frame.width, this.frame.top);
+                    context.lineTo(this.frame.left + this.frame.width, this.frame.top +    this.frame.height);
+                    context.lineTo(this.frame.left,  this.frame.top +   this.frame.height);
 
                 }
 
