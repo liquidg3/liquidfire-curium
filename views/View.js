@@ -69,7 +69,7 @@ define(['altair/facades/declare',
                 // Create a shape, of some sort//we should account for border size, border radius.
                 context.beginPath();
 
-                if( this.borderRadius ){
+                if (this.borderRadius) {
 
                     context.moveTo(frame.left+this.borderRadius, frame.top);
 
@@ -195,7 +195,7 @@ define(['altair/facades/declare',
             if (_.isString(property)) {
                 dfd = this.animateProperty(property, value, duration);
             } else {
-                dfd = this.animateProperties(property, value);
+                dfd = this.animateProperties(property, value, duration);
             }
 
             return dfd;
@@ -223,12 +223,13 @@ define(['altair/facades/declare',
 
         animateProperties: function (properties, duration, options) {
 
-            var from = {},
-                dfd         = new this.Deferred(),
+            var dfd         = new this.Deferred(),
                 to          = properties,
                 _duration   = duration || 500,
                 view        = this,
                 _options    = options || {},
+                setOnView   = _.has(_options, 'setOnView') ? _options.setOnView : true,
+                from        = _options.from,
                 anim;
 
             if(_.isObject(_duration)) {
@@ -236,15 +237,28 @@ define(['altair/facades/declare',
                 _duration = _options.duration || 500;
             }
 
-            _.each(properties, function (value, key) {
-                from[key] = lang.getObject(key, false, this);
-            }, this);
+            if(!from) {
 
-            anim = new tween.Tween(from).to(to, _duration).onUpdate(function () {
+                from = {};
 
-                _.each(from, function (value, key) {
-                    lang.setObject(key, this[key], view);
+                _.each(properties, function (value, key) {
+                    from[key] = lang.getObject(key, false, this);
                 }, this);
+
+            }
+
+            anim = new tween.Tween(from).to(to, _duration).onUpdate(function (time) {
+
+                //they may be borrowing the animate for something other than view properties
+                if(setOnView) {
+
+                    _.each(from, function (value, key) {
+                        lang.setObject(key, this[key], view);
+                    }, this);
+
+                }
+
+                dfd.progress(this);
 
             }).onComplete(function () {
                 view._animators.splice(view._animators.indexOf(anim), 1);

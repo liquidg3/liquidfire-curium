@@ -48,7 +48,9 @@ define(['altair/facades/declare',
 
         execute: function () {
 
-            return this.fsm.execute();
+            return this.fsm.execute().then(function () {
+                return this;
+            }.bind(this));
 
         },
 

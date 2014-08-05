@@ -13,8 +13,9 @@ define(['altair/facades/declare',
 
     return declare([Lifecycle, _AssertMixin], {
 
-        rootViewController: null,
-        appDir: '',
+        appDir:                 '',
+        activeViewController:   null,
+        animationHandle:        null,
         startup: function (options) {
 
             this.assert(options, 'You must pass some options to ' + this);
@@ -27,14 +28,13 @@ define(['altair/facades/declare',
             this.assert(rootVc, 'You must pass a rootViewController to ' + this);
 
             //more options needed
-            options.app = this;
             options.dir = this.appDir = dir;
 
             this.canvas = options.canvas = new Canvas(width, height);
             this.context = options.context = this.canvas.getContext('2d');
 
             this.deferred = this.all({
-                rootViewController: this.forgeController(rootVc, options)
+                activeViewController: this.forgeController(rootVc, options)
             }).then(function (dependencies) {
                 declare.safeMixin(this, dependencies);
                 return this;
@@ -46,10 +46,13 @@ define(['altair/facades/declare',
 
         forgeController: function (named, options) {
 
-            var p   = path.join(this.appDir, 'viewcontrollers', named),
+            var _options = options || {},
+                p   = path.join(this.appDir, 'viewcontrollers', named),
                 dir = this.appDir;
 
-            return this.forge(p, options, {
+            _options.app = this;
+
+            return this.forge(p, _options, {
                 foundry: function (Class, options, config) {
 
                     return config.defaultFoundry(Class, options, config).then(function (controller) {
@@ -69,7 +72,17 @@ define(['altair/facades/declare',
 
             this.deferred = new this.Deferred();
 
-            this.rootViewController.execute();
+            this.activeViewController.execute().then(function (vc) {
+
+                this.presentViewController = vc;
+
+            }.bind(this)).otherwise(function (err) {
+
+                this.log('app error in state: ' + err.state);
+                this.log(err.error);
+
+            }.bind(this));
+
             this.renderFrame();
 
             return this.inherited(arguments);
@@ -79,7 +92,21 @@ define(['altair/facades/declare',
         renderFrame: function (time) {
 
             this.animationHandle = requestAnimationFrame(this.hitch('renderFrame'));
-            this.rootViewController.render(this.context, time);
+            this.activeViewController.render(this.context, time);
+        },
+
+        presentViewController: function (named, options) {
+
+            return this.forgeController(named, options).then(function (vc) {
+                return vc.execute();
+            }).then(function (vc) {
+
+                this.activeViewController = vc;
+
+                return vc;
+
+            }.bind(this));
+
         }
 
 

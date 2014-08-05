@@ -11,11 +11,13 @@
 define(['altair/facades/declare', //take a look at terms.md
         'altair/Lifecycle',
         'altair/mixins/_AssertMixin',
-        'altair/events/Emitter'
+        'altair/events/Emitter',
+        'require'
 ], function (declare,
              Lifecycle,
              _AssertMixin,
-             Emitter) {
+             Emitter,
+             require) {
 
     return declare([Lifecycle, Emitter, _AssertMixin], {
 
@@ -29,7 +31,7 @@ define(['altair/facades/declare', //take a look at terms.md
                     _options.app.dir = 'app'; //default app dir is our current app
                 }
 
-                return this.forge('models/App', _options.app).then(function (app) {
+                return this.forge(require.toUrl(_options.app.dir + '/App'), _options.app).then(function (app) {
                     return app.execute();
                 });
 
