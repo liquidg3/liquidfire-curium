@@ -25,7 +25,9 @@ define(['altair/facades/declare', //take a look at terms.md
 
             if (_options.app) {
 
-                _options.app.dir = 'app/app';
+                if(!_options.app.dir) {
+                    _options.app.dir = 'app'; //default app dir is our current app
+                }
 
                 return this.forge('models/App', _options.app).then(function (app) {
                     return app.execute();

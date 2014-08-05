@@ -1,7 +1,7 @@
 define(['altair/facades/declare',
-    'altair/Lifecycle',
-    'altair/mixins/_AssertMixin',
-    'altair/StateMachine'
+        'altair/Lifecycle',
+        'altair/mixins/_AssertMixin',
+        'altair/StateMachine'
 ], function (declare,
              Lifecycle,
              _AssertMixin,
