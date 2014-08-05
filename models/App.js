@@ -14,7 +14,7 @@ define(['altair/facades/declare',
     return declare([Lifecycle, _AssertMixin], {
 
         rootViewController: null,
-        vcDir: '',
+        appDir: '',
         startup: function (options) {
 
             this.assert(options, 'You must pass some options to ' + this);
@@ -28,7 +28,7 @@ define(['altair/facades/declare',
 
             //more options needed
             options.app = this;
-            options.dir = this.vcDir = dir;
+            options.dir = this.appDir = dir;
 
             this.canvas = options.canvas = new Canvas(width, height);
             this.context = options.context = this.canvas.getContext('2d');
@@ -46,8 +46,8 @@ define(['altair/facades/declare',
 
         forgeController: function (named, options) {
 
-            var p   = path.join(this.vcDir, 'viewcontrollers', named),
-                dir = this.vcDir;
+            var p   = path.join(this.appDir, 'viewcontrollers', named),
+                dir = this.appDir;
 
             return this.forge(p, options, {
                 foundry: function (Class, options, config) {

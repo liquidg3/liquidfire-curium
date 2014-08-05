@@ -1,9 +1,9 @@
 define(['altair/facades/declare',
-    'altair/mixins/_DeferredMixin',
-    'altair/mixins/_AssertMixin',
-    'dojo/_base/lang',
-    'altair/plugins/node!tween.js',
-    'lodash'
+        'altair/mixins/_DeferredMixin',
+        'altair/mixins/_AssertMixin',
+        'dojo/_base/lang',
+        'altair/plugins/node!tween.js',
+        'lodash'
 ], function (declare,
              _DeferredMixin,
              _AssertMixin,
@@ -12,7 +12,6 @@ define(['altair/facades/declare',
              _) {
 
     var View = declare([_DeferredMixin, _AssertMixin], {
-
 
         frame:              null,
         backgroundColor:    '#FFF',

@@ -37,7 +37,7 @@ define(['altair/facades/declare',
 
         loadImage: function (path) {
 
-            return this.promise(fs, 'readFile', path).then(function (data) {
+            return this.promise(fs, 'readFile', this.vc.resolvePath(path)).then(function (data) {
 
                 var img = new Canvas.Image();
                 img.src = data;
