@@ -50,8 +50,10 @@ define(['altair/facades/declare',
 
         render: function (context, time) {
 
-            //so we don't interfere with anyone else' drawing commands. (as a result, you must call context.restore() when you're done with the.
-            context.save();
+            if (this.autorestoreContext) {
+                //so we don't interfere with anyone else' drawing commands. (as a result, you must call context.restore() when you're done with the.
+                context.save();
+            }
 
             _.each(this._animators, function (anim) {
                 anim.update(time);
@@ -143,13 +145,13 @@ define(['altair/facades/declare',
             }
 
             _.each(this._subViews, function (view) {
-                if(this.isSubViewVisible(view)) {
+                if (this.isSubViewVisible(view)) {
                     view.render(context, time);
                 }
             }, this);
 
 
-            if( this.autorestoreContext ){
+            if (this.autorestoreContext) {
                 context.restore();
             }
 
@@ -234,6 +236,7 @@ define(['altair/facades/declare',
                 this._behaviors = [];
             }
 
+            behavior.view = this;
             this._behaviors.push(behavior);
 
             return this;
