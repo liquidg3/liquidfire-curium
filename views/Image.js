@@ -2,7 +2,7 @@ define(['altair/facades/declare',
         'altair/Lifecycle',
         'altair/plugins/node!fs',
         './View',
-        'altair/plugins/node!openvg-canvas'
+        'altair/plugins/node!openvg-canvas' //it's bad i have to bring this in
 ], function (declare,
              Lifecycle,
              fs,

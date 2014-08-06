@@ -25,6 +25,7 @@ define(['altair/facades/declare',
 
         _subViews:          null,
         _animators:         null,
+        _behaviors:         null,
         _frameCache:        null,
 
         constructor: function (options) {
@@ -52,13 +53,17 @@ define(['altair/facades/declare',
             //so we don't interfere with anyone else' drawing commands. (as a result, you must call context.restore() when you're done with the.
             context.save();
 
-
             _.each(this._animators, function (anim) {
                 anim.update(time);
             });
 
+            _.each(this._behaviors, function (behavior) {
+                behavior.step(this, time);
+            }, this);
+
             var drawBorder  = false,
                 frame       = this.globalFrame();
+
 
             //alpha
             context.globalAlpha = this.alpha;
@@ -202,6 +207,8 @@ define(['altair/facades/declare',
         },
 
 
+
+
         animateProperty: function (named, to, duration) {
             var options = {};
             options[named] = to;
@@ -219,6 +226,17 @@ define(['altair/facades/declare',
             }
 
             return frame;
+        },
+
+        addBehavior: function (behavior) {
+
+            if(!this._behaviors) {
+                this._behaviors = [];
+            }
+
+            this._behaviors.push(behavior);
+
+            return this;
         },
 
         animateProperties: function (properties, duration, options) {

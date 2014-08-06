@@ -1,10 +1,10 @@
 define(['altair/facades/declare',
     'altair/facades/mixin',
-    './ScrollView',
+    './Scroll',
     'lodash'
-], function (declare, mixin, ScrollView, _) {
+], function (declare, mixin, Scroll, _) {
 
-    return declare([ScrollView], {
+    return declare([Scroll], {
 
 
         choices:      null,

@@ -88,6 +88,23 @@ define(['altair/facades/declare',
 
         },
 
+        forgeBehavior: function (path, options) {
+
+            var _options = options || {};
+
+            if (path.search(':') === -1 && path[0] !== '/') {
+                path = 'liquidfire:Curium/behaviors/' + path;
+            }
+
+            _options.context = this.context;
+            _options.canvas  = this.canvas;
+            _options.vc      = this;
+
+            return this.forge(path, _options, { parent: this });
+
+
+        },
+
         forgeSound: function (path, options) {
 
             if (!options) {

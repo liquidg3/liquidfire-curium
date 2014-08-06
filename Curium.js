@@ -31,7 +31,7 @@ define(['altair/facades/declare', //take a look at terms.md
                     _options.app.dir = 'app'; //default app dir is our current app
                 }
 
-                return this.forge(require.toUrl(_options.app.dir + '/App'), _options.app).then(function (app) {
+                return this.forge(require.toUrl(_options.app.dir + '/App'), _options.app, { type: 'curium-app' }).then(function (app) {
                     return app.execute();
                 });
 

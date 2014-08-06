@@ -53,6 +53,7 @@ define(['altair/facades/declare',
             _options.app = this;
 
             return this.forge(p, _options, {
+                type: 'curium-viewcontroller',
                 foundry: function (Class, options, config) {
 
                     return config.defaultFoundry(Class, options, config).then(function (controller) {
