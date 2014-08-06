@@ -6,7 +6,7 @@ define(['altair/facades/declare',
              _AssertMixin) {
 
     return declare([_DeferredMixin, _AssertMixin], {
-
+        view:       null,
         lastTime:   null,
         lastFrame:  null,
         startTime:  null,
