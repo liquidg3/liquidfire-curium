@@ -1,11 +1,13 @@
 define(['altair/facades/declare',
         'altair/Lifecycle',
         'altair/mixins/_AssertMixin',
-        'altair/StateMachine'
+        'altair/StateMachine',
+        'lodash'
 ], function (declare,
              Lifecycle,
              _AssertMixin,
-             StateMachine) {
+             StateMachine,
+             _) {
 
     return declare([Lifecycle, _AssertMixin], {
 
@@ -14,6 +16,7 @@ define(['altair/facades/declare',
         fsm:    null,
         canvas: null,
         view:   null,
+        __coreViews: ['View', 'Image', 'Label', 'Scroll', 'Select', 'Cicrle'], //our view types
         startup: function (options) {
 
             var _options = options || this.options || {};
@@ -76,15 +79,21 @@ define(['altair/facades/declare',
                 _options = path || {};
                 path    = 'liquidfire:Curium/views/View';
             } else if (path.search(':') === -1 && path[0] !== '/') {
-                path = 'liquidfire:Curium/views/' + path;
+
+                //is it a core view?
+                if (this.__coreViews.indexOf(path) === -1) {
+                    path = 'views/' + path;
+                } else {
+                    path = 'liquidfire:Curium/views/' + path;
+                }
+
             }
 
             _options.context = this.context;
             _options.canvas  = this.canvas;
             _options.vc      = this;
 
-            return this.forge(path, _options, { parent: this });
-
+            return this.forge(path, _options);
 
         },
 

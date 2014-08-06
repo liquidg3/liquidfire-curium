@@ -27,7 +27,7 @@ define(['altair/facades/declare', //take a look at terms.md
 
             if (_options.app) {
 
-                if(!_options.app.dir) {
+                if (!_options.app.dir) {
                     _options.app.dir = 'app'; //default app dir is our current app
                 }
 
