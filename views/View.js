@@ -1,9 +1,9 @@
 define(['altair/facades/declare',
-        'altair/mixins/_DeferredMixin',
-        'altair/mixins/_AssertMixin',
-        'dojo/_base/lang',
-        'altair/plugins/node!tween.js',
-        'lodash'
+    'altair/mixins/_DeferredMixin',
+    'altair/mixins/_AssertMixin',
+    'dojo/_base/lang',
+    'altair/plugins/node!tween.js',
+    'lodash'
 ], function (declare,
              _DeferredMixin,
              _AssertMixin,
@@ -20,13 +20,12 @@ define(['altair/facades/declare',
         clipping:           false,
         alpha:              1,
         superView:          null,
-        autorestoreContext: false,
+        autorestoreContext: true,
         vc:                 null,           //set by the creating view controller
 
         _subViews:          null,
         _animators:         null,
         _behaviors:         null,
-        _frameCache:        null,
 
         constructor: function (options) {
 
@@ -35,6 +34,7 @@ define(['altair/facades/declare',
             //reset subviews
             this._subViews  = [];
             this._animators = [];
+            this._behaviors = [];
 
             this.frame = {
                 left: 0,
@@ -48,7 +48,7 @@ define(['altair/facades/declare',
 
         },
 
-        render: function (context, time) {
+        willRender: function (context, time) {
 
             if (this.autorestoreContext) {
                 //so we don't interfere with anyone else' drawing commands. (as a result, you must call context.restore() when you're done with the.
@@ -62,6 +62,12 @@ define(['altair/facades/declare',
             _.each(this._behaviors, function (behavior) {
                 behavior.step(this, time);
             }, this);
+
+
+        },
+
+        render: function (context, time) {
+
 
             var drawBorder  = false,
                 frame       = this.globalFrame();
@@ -144,9 +150,16 @@ define(['altair/facades/declare',
                 context.stroke();
             }
 
+        },
+
+
+        didRender: function (context, time) {
+
             _.each(this._subViews, function (view) {
                 if (this.isSubViewVisible(view)) {
+                    view.willRender(context, time);
                     view.render(context, time);
+                    view.didRender(context, time);
                 }
             }, this);
 
@@ -190,9 +203,12 @@ define(['altair/facades/declare',
 
 
         addSubView: function (view) {
+
             view.removeFromSuperView();
             this._subViews.push(view);
+
             view.superView = this;
+
         },
 
         animate: function (property, value, duration) {
@@ -206,10 +222,8 @@ define(['altair/facades/declare',
             }
 
             return dfd;
+
         },
-
-
-
 
         animateProperty: function (named, to, duration) {
             var options = {};
@@ -303,14 +317,12 @@ define(['altair/facades/declare',
 
         },
 
-        clearFrameCache: function () {
-            this._frameCache = null;
-        },
-
         removeAllSubViews: function () {
+
             _.each(this._subViews, function (view) {
                 view.removeFromSuperView();
             });
+
         },
 
         removeFromSuperView: function () {

@@ -1,7 +1,7 @@
 define(['altair/facades/declare',
-        'altair/Lifecycle',
-        './View',
-        'lodash'
+    'altair/Lifecycle',
+    './View',
+    'lodash'
 ], function (declare,
              Lifecycle,
              View,
@@ -11,19 +11,6 @@ define(['altair/facades/declare',
 
 
         render: function (context, time) {
-
-            if (this.autorestoreContext) {
-                //so we don't interfere with anyone else' drawing commands. (as a result, you must call context.restore() when you're done with the.
-                context.save();
-            }
-
-            _.each(this._animators, function (anim) {
-                anim.update(time);
-            });
-
-            _.each(this._behaviors, function (behavior) {
-                behavior.step(this, time);
-            }, this);
 
             var drawBorder  = false,
                 frame       = this.globalFrame();
@@ -57,18 +44,6 @@ define(['altair/facades/declare',
             if (drawBorder) {
                 context.stroke();
             }
-
-            _.each(this._subViews, function (view) {
-                if (this.isSubViewVisible(view)) {
-                    view.render(context, time);
-                }
-            }, this);
-
-
-            if (this.autorestoreContext) {
-                context.restore();
-            }
-
 
         }
 

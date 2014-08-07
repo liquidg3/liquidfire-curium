@@ -1,8 +1,8 @@
 define(['altair/facades/declare',
-        'altair/Lifecycle',
-        'altair/mixins/_AssertMixin',
-        'altair/StateMachine',
-        'lodash'
+    'altair/Lifecycle',
+    'altair/mixins/_AssertMixin',
+    'altair/StateMachine',
+    'lodash'
 ], function (declare,
              Lifecycle,
              _AssertMixin,
@@ -42,9 +42,9 @@ define(['altair/facades/declare',
                     }
                 })
             }).then(function (dependencies) {
-                declare.safeMixin(this, dependencies);
-                return this;
-            }.bind(this));
+                    declare.safeMixin(this, dependencies);
+                    return this;
+                }.bind(this));
 
             return this.inherited(arguments);
         },
@@ -67,8 +67,9 @@ define(['altair/facades/declare',
         },
 
         render: function (context, time) {
-            this.view.clearFrameCache();
+            this.view.willRender(context, time);
             this.view.render(context, time);
+            this.view.didRender(context, time);
         },
 
         forgeView: function (path, options) {
@@ -76,8 +77,10 @@ define(['altair/facades/declare',
             var _options = options || {};
 
             if (_.isObject(path)) {
-                _options = path || {};
-                path    = 'liquidfire:Curium/views/View';
+
+                _options    = path || {};
+                path        = 'liquidfire:Curium/views/View';
+
             } else if (path.search(':') === -1 && path[0] !== '/') {
 
                 //is it a core view?

@@ -9,10 +9,10 @@
  */
 
 define(['altair/facades/declare', //take a look at terms.md
-        'altair/Lifecycle',
-        'altair/mixins/_AssertMixin',
-        'altair/events/Emitter',
-        'require'
+    'altair/Lifecycle',
+    'altair/mixins/_AssertMixin',
+    'altair/events/Emitter',
+    'require'
 ], function (declare,
              Lifecycle,
              _AssertMixin,
@@ -28,11 +28,13 @@ define(['altair/facades/declare', //take a look at terms.md
             if (_options.app) {
 
                 if (!_options.app.dir) {
-                    _options.app.dir = 'app'; //default app dir is our current app
+                    _options.app.dir = '.';
                 }
 
+                _options.app.dir = this.nexus('Altair').resolvePath(_options.app.dir);
+
                 return this.forge(require.toUrl(_options.app.dir + '/App'), _options.app, { type: 'curium-app' }).then(function (app) {
-                    return app.execute();
+                    app.execute();
                 });
 
             }
