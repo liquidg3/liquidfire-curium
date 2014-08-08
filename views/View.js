@@ -204,6 +204,8 @@ define(['altair/facades/declare',
 
         addSubView: function (view) {
 
+//            this.assert(view, 'add')
+
             view.removeFromSuperView();
             this._subViews.push(view);
 

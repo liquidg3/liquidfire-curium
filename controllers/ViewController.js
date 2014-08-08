@@ -59,6 +59,9 @@ define(['altair/facades/declare',
 
             return this.fsm.execute().then(function () {
                 return this;
+            }.bind(this)).otherwise(function (err) {
+                this.log('ViewController.StateMachine error');
+                this.log(err);
             }.bind(this));
 
         },
@@ -121,11 +124,12 @@ define(['altair/facades/declare',
 
             }
 
+
             _options.context = this.context;
             _options.canvas  = this.canvas;
             _options.vc      = this;
 
-            return this.forge(path, _options, { parent: this });
+            return this.forge(path, _options);
 
 
         },
@@ -139,7 +143,7 @@ define(['altair/facades/declare',
                 path = 'liquidfire:Curium/audio/' + path;
             }
 
-            return this.forge(path, options, { parent: this });
+            return this.forge(path, options);
 
         }
 

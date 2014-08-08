@@ -14,7 +14,7 @@ define(['altair/facades/declare',
         lastFrame:  null,
         startTime:  null,
 
-        construct: function (options) {
+        constructor: function (options) {
 
             _.each(options, function (value, key) {
                 this[key] = value;
