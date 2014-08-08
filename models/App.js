@@ -1,17 +1,19 @@
 define(['altair/facades/declare',
-    'altair/Lifecycle',
-    'altair/plugins/node!path',
-    'altair/plugins/node!openvg-canvas',
-    'altair/mixins/_AssertMixin',
-    'require'
+        'altair/Lifecycle',
+        'altair/events/Emitter',
+        'altair/plugins/node!path',
+        'altair/plugins/node!openvg-canvas',
+        'altair/mixins/_AssertMixin',
+        'require'
 ], function (declare,
              Lifecycle,
+             Emitter,
              path,
              Canvas,
              _AssertMixin,
              require) {
 
-    return declare([Lifecycle, _AssertMixin], {
+    return declare([Lifecycle, _AssertMixin, Emitter], {
 
         appDir:                 '',
         activeViewController:   null,

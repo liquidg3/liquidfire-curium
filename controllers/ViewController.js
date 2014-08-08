@@ -1,15 +1,17 @@
 define(['altair/facades/declare',
     'altair/Lifecycle',
+    'altair/events/Emitter',
     'altair/mixins/_AssertMixin',
     'altair/StateMachine',
     'lodash'
 ], function (declare,
              Lifecycle,
+             Emitter,
              _AssertMixin,
              StateMachine,
              _) {
 
-    return declare([Lifecycle, _AssertMixin], {
+    return declare([Lifecycle, _AssertMixin, Emitter], {
 
         app:    null,
         states: null,
