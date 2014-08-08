@@ -4,7 +4,7 @@
     "description":  "Put your description in here!",
     "dependencies": {
         "openvg-canvas": "1.1.7",
-        "speaker":       "0.2.1"
-
+        "speaker":       "0.2.1",
+        "tween.js":      "0.14.0"
     }
 }
