@@ -4,29 +4,28 @@ define(['altair/facades/declare',
 ], function (declare, _, _Base) {
 
     return declare([_Base], {
+
         collisionGroup: null,
         registry:       {},
         view:           null,
 
         construct: function (options) {
-            this.inherited(arguments);  //do i need this to ensure this.view has been set?
 
             //add ourself to the collision registry
             var _options = options || {
                 collisionGroup: '*'
             };
 
-            this.collisionGroup = _options.collisionGroup;
-
-            //ensoure that our group exists in the registry
-            this.registry[this.collisionGroup] = this.registry[this.collisionGroup] || [];
+            //ensure that our group exists in the registry
+            this.registry[options.collisionGroup] = this.registry[this.collisionGroup] || [];
 
             //add ourself to the registry
-            this.registry[this.collisionGroup].push(this.view);
+            this.registry[options.collisionGroup].push(this.view);
 
         },
 
         step: function (view, time) {
+
             var collisions = [];
 
             //detect collisions with other views of this namespace.

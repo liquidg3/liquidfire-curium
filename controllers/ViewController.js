@@ -16,7 +16,11 @@ define(['altair/facades/declare',
         fsm:    null,
         canvas: null,
         view:   null,
+
         __coreViews: ['View', 'Image', 'Label', 'Scroll', 'Select', 'Cicrle'], //our view types
+        __coreBehaviors: ['Collision', 'Velocity'], //our behaviors
+
+
         startup: function (options) {
 
             var _options = options || this.options || {};
@@ -105,7 +109,14 @@ define(['altair/facades/declare',
             var _options = options || {};
 
             if (path.search(':') === -1 && path[0] !== '/') {
-                path = 'liquidfire:Curium/behaviors/' + path;
+
+                if (this.__coreBehaviors.indexOf(path) === -1) {
+                    path = 'behaviors/' + path;
+                } else {
+                    path = 'liquidfire:Curium/behaviors/' + path;
+                }
+
+
             }
 
             _options.context = this.context;

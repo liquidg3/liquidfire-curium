@@ -1,18 +1,25 @@
 define(['altair/facades/declare',
         'altair/mixins/_DeferredMixin',
-        'altair/mixins/_AssertMixin'
+        'altair/mixins/_AssertMixin',
+        'lodash'
 ], function (declare,
              _DeferredMixin,
-             _AssertMixin) {
+             _AssertMixin,
+             lodash) {
 
     return declare([_DeferredMixin, _AssertMixin], {
+
         view:       null,
         lastTime:   null,
         lastFrame:  null,
         startTime:  null,
 
         construct: function (options) {
-            this.options = options;
+
+            _.each(options, function (value, key) {
+                this[key] = value;
+            }, this);
+
         },
 
         start: function (view, time) {
