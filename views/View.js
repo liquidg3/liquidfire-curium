@@ -23,11 +23,12 @@ define(['altair/facades/declare',
         alpha:              1,
         superView:          null,
         autorestoreContext: true,
-        vc:                 null,           //set by the creating view controller
+        vc:                 null,       //set by the creating view controller
 
         _subViews:          null,
         _animators:         null,
         _behaviors:         null,
+        _ignoreExtensions:  '*',        // ignore the extension system
 
         constructor: function (options) {
 
