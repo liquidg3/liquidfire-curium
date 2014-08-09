@@ -76,7 +76,8 @@ define(['altair/facades/declare',
 
         framesOverlap: function (view1, view2) {
 
-            if (view1.left + view2.width < view2.left || view1.left > view2.left + view2.width || view1.top + view2.height < view2.top || view1.top > view2.top + view2.height) {
+            if (view1.left + view1.width < view2.left || view1.left > view2.left + view2.width ||
+                view1.top + view1.height < view2.top || view1.top > view2.top + view2.height) {
                 return null;
             }
 
