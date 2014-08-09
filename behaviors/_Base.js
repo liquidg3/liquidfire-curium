@@ -22,9 +22,9 @@ define(['altair/facades/declare',
 
         },
 
-        start: function (view, time) {
+        start: function (time) {
 
-            this.lastFrame  = view.frame;
+            this.lastFrame  = this.view.frame;
             this.startTime  = time;
 
         },
@@ -34,7 +34,14 @@ define(['altair/facades/declare',
             this.lastFrame = view.frame;
             this.lastTime  = time;
 
+        },
+
+        setView: function (view) {
+            this.view = view;
+            return this;
         }
+
+
 
     });
 

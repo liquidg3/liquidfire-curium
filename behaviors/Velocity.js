@@ -8,10 +8,10 @@ define(['altair/facades/declare',
         xSpeed: 0,
         ySpeed: 0,
 
-        step:  function (view, time) {
+        step:  function (time) {
 
-            view.left += this.xSpeed;
-            view.top += this.ySpeed;
+            this.view.frame.left += this.xSpeed;
+            this.view.frame.top += this.ySpeed;
 
             return this.inherited(arguments);
         }

@@ -1,17 +1,19 @@
 define(['altair/facades/declare',
-    'altair/mixins/_DeferredMixin',
-    'altair/mixins/_AssertMixin',
-    'dojo/_base/lang',
-    'altair/plugins/node!tween.js',
-    'lodash'
+        'altair/Lifecycle',
+        'altair/mixins/_AssertMixin',
+        'altair/events/Emitter',
+        'dojo/_base/lang',
+        'altair/plugins/node!tween.js',
+        'lodash'
 ], function (declare,
-             _DeferredMixin,
+             Lifecycle,
              _AssertMixin,
+             Emitter,
              lang,
              tween,
              _) {
 
-    var View = declare([_DeferredMixin, _AssertMixin], {
+    var View = declare([Lifecycle, _AssertMixin, Emitter], {
 
         frame:              null,
         backgroundColor:    '#FFF',
@@ -60,7 +62,7 @@ define(['altair/facades/declare',
             });
 
             _.each(this._behaviors, function (behavior) {
-                behavior.step(this, time);
+                behavior.step(time);
             }, this);
 
 
@@ -156,11 +158,17 @@ define(['altair/facades/declare',
         didRender: function (context, time) {
 
             _.each(this._subViews, function (view) {
-                if (this.isSubViewVisible(view)) {
+
+                if (view && this.isSubViewVisible(view)) {
                     view.willRender(context, time);
                     view.render(context, time);
                     view.didRender(context, time);
                 }
+
+                if (!view) {
+                    console.log(this + ' has undefined subview ', this._subViews.length);
+                }
+
             }, this);
 
 
@@ -204,12 +212,9 @@ define(['altair/facades/declare',
 
         addSubView: function (view) {
 
-//            this.assert(view, 'add')
-
             view.removeFromSuperView();
-            this._subViews.push(view);
-
             view.superView = this;
+            this._subViews.push(view);
 
         },
 
@@ -248,11 +253,13 @@ define(['altair/facades/declare',
 
         addBehavior: function (behavior) {
 
+            this.assert(behavior && behavior.setView, 'you must pass a behavior View.addBehavior()');
+
             if(!this._behaviors) {
                 this._behaviors = [];
             }
 
-            behavior.view = this;
+            behavior.setView(this);
             this._behaviors.push(behavior);
 
             return this;
@@ -333,6 +340,17 @@ define(['altair/facades/declare',
                 this.superView._subViews.splice(this.superView._subViews.indexOf(this), 1);
                 this.superView = null;
             }
+        },
+
+        teardown: function () {
+
+            this.removeFromSuperView();
+
+            this.deferred = this.all(_.map(this._behaviors, function (b) {
+                return b.teardown ? b.teardown() : null;
+            }));
+
+            return this.inherited(arguments);
         }
 
     });

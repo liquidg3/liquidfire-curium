@@ -125,6 +125,7 @@ define(['altair/facades/declare',
             }
 
 
+
             _options.context = this.context;
             _options.canvas  = this.canvas;
             _options.vc      = this;

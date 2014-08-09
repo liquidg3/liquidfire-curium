@@ -5,49 +5,57 @@ define(['altair/facades/declare',
 
     return declare([_Base], {
 
-        collisionGroup: null,
+        group: null,
         registry:       {},
         view:           null,
 
-        construct: function (options) {
+        constructor: function (options) {
 
-            //add ourself to the collision registry
+            //add our self to the collision registry
             var _options = options || {
-                collisionGroup: '*'
+                group: '*'
             };
 
             //ensure that our group exists in the registry
-            this.registry[options.collisionGroup] = this.registry[this.collisionGroup] || [];
-
-            //add ourself to the registry
-            this.registry[options.collisionGroup].push(this.view);
+            this.registry[_options.group] = this.registry[_options.group] || [];
+            this.registry[_options.group].push(this);
 
         },
 
-        step: function (view, time) {
+        step: function (time) {
 
-            var collisions = [];
+            var collisions = [],
+                view = this.view;
 
             //detect collisions with other views of this namespace.
-            _.each(this.registry[this.collisionGroup], function (v) {
+            _.each(this.registry[this.group], function (collision) {
 
-                var collisionPoint = this.framesOverlap(view.frame, v.frame);
+                var v = collision.view,
+                    collisionPoint;
 
-                if (v !== view && collisionPoint) {
-                    collisions.push({
-                        view:  v,
-                        point: collisionPoint,
-                        time:  time
-                    });
+                if (v && v !== view) {
+
+                    collisionPoint = this.framesOverlap(view.frame, v.frame);
+
+                    if (collisionPoint) {
+
+                        collisions.push({
+                            view:  v,
+                            point: collisionPoint,
+                            time:  time
+                        });
+
+                    }
 
                 }
 
-            });
+            }, this);
 
             if (collisions.length) {
 
                 view.emit('collision', {
-                    'collisions': collisions
+                    collisions: collisions,
+                    view: view
                 });
 
             }
@@ -56,7 +64,12 @@ define(['altair/facades/declare',
 
         teardown: function () {
 
-            this.registry[this.collisionGroup].splice(this.registry[this.collisionGroup].indexOf(this.registry[this.collisionGroup]), 1);
+            if (this.registry[this.group]) {
+                this.registry[this.group].splice(this.registry[this.group].indexOf(this), 1);
+            } else {
+                console.log('teardown of collision had no group (should never happen)');
+            }
+
             return this.inherited(arguments);
 
         },
