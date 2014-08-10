@@ -5,8 +5,8 @@ define(['altair/facades/declare',
 
     return declare([_Base], {
 
-        calculate: false,
-        group: null,
+        calculate:      false,
+        group:          null,
         registry:       {},
         view:           null,
 
@@ -25,6 +25,10 @@ define(['altair/facades/declare',
 
         step: function (time) {
 
+            if (!this.calculate) {
+                return;
+            }
+
             var collisions = [],
                 view = this.view,
                 angleOfIncidence,
@@ -39,7 +43,7 @@ define(['altair/facades/declare',
                     thisPosition,
                     directionCoords;
 
-                if (this.calculate && v && v !== view) {
+                if (v && v !== view) {
 
                     collisionPoint = this.framesOverlap(view.frame, v.frame);
 

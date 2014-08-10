@@ -364,6 +364,8 @@ define(['altair/facades/declare',
                 return b.teardown ? b.teardown() : null;
             }));
 
+            this._animators = null;
+
             return this.inherited(arguments);
         }
 
