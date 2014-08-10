@@ -95,39 +95,39 @@ define(['altair/facades/declare',
 
                 if (this.borderRadius) {
 
-                    context.moveTo(frame.left+this.borderRadius, frame.top);
+                    context.moveTo(frame.left + this.borderRadius, frame.top);
 
                     //top line
-                    context.lineTo(frame.left+frame.width-this.borderRadius, frame.top);
+                    context.lineTo(frame.left + frame.width - this.borderRadius, frame.top);
 
                     //top right corner arc
-                    context.arcTo(frame.left+frame.width, frame.top, frame.left+frame.width, frame.top+this.borderRadius, this.borderRadius);
+                    context.arcTo(frame.left + frame.width, frame.top, frame.left + frame.width, frame.top + this.borderRadius, this.borderRadius);
 
                     //right line
-                    context.lineTo(frame.left+frame.width, frame.top+frame.height-this.borderRadius);
+                    context.lineTo(frame.left + frame.width, frame.top + frame.height - this.borderRadius);
 
                     //bottom right corner arc
-                    context.arcTo(frame.left+frame.width, frame.top+frame.height, frame.left+frame.width-this.borderRadius, frame.top+frame.height, this.borderRadius);
+                    context.arcTo(frame.left + frame.width, frame.top + frame.height, frame.left + frame.width - this.borderRadius, frame.top + frame.height, this.borderRadius);
 
                     //bottom line
-                    context.lineTo(frame.left+this.borderRadius, frame.top+frame.height);
+                    context.lineTo(frame.left + this.borderRadius, frame.top + frame.height);
 
                     //bottom left arc
-                    context.arcTo(frame.left, frame.top+frame.height, frame.left, frame.top+frame.height-this.borderRadius, this.borderRadius);
+                    context.arcTo(frame.left, frame.top + frame.height, frame.left, frame.top + frame.height - this.borderRadius, this.borderRadius);
 
                     //left line
-                    context.lineTo(frame.left, frame.top+this.borderRadius);
+                    context.lineTo(frame.left, frame.top + this.borderRadius);
 
                     //top left arc
-                    context.arcTo(frame.left, frame.top, frame.left+this.borderRadius, frame.top, this.borderRadius);
+                    context.arcTo(frame.left, frame.top, frame.left + this.borderRadius, frame.top, this.borderRadius);
 
                 } else {
 
                     //just the box
                     context.moveTo(frame.left, frame.top);
-                    context.lineTo(frame.left+ frame.width, frame.top);
-                    context.lineTo(frame.left+ frame.width, frame.top+    frame.height);
-                    context.lineTo(frame.left, frame.top+   frame.height);
+                    context.lineTo(frame.left + frame.width, frame.top);
+                    context.lineTo(frame.left + frame.width, frame.top +    frame.height);
+                    context.lineTo(frame.left, frame.top +   frame.height);
 
                 }
 
@@ -206,15 +206,15 @@ define(['altair/facades/declare',
                 return false;
             }
             //too far left
-            else if(frame.left + frame.width < myBounds.left) {
+            else if (frame.left + frame.width < myBounds.left) {
                 return false;
             }
             //top far right
-            else if(frame.left > myBounds.left + myBounds.width) {
+            else if (frame.left > myBounds.left + myBounds.width) {
                 return false;
             }
             //too far below
-            else if(frame.top > myBounds.top + myBounds.height) {
+            else if (frame.top > myBounds.top + myBounds.height) {
                 return false;
             }
 
@@ -256,7 +256,7 @@ define(['altair/facades/declare',
             var frame = _.clone(this.frame),
                 parentFrame = this.superView ? this.superView.globalFrame() : null;
 
-            if(parentFrame) {
+            if (parentFrame) {
                 frame.top += parentFrame.top;
                 frame.left += parentFrame.left;
             }
@@ -268,7 +268,7 @@ define(['altair/facades/declare',
 
             this.assert(behavior && behavior.setView, 'you must pass a behavior View.addBehavior()');
 
-            if(!this._behaviors) {
+            if (!this._behaviors) {
                 this._behaviors = [];
             }
 
@@ -287,14 +287,15 @@ define(['altair/facades/declare',
                 _options    = options || {},
                 setOnView   = _.has(_options, 'setOnView') ? _options.setOnView : true,
                 from        = _options.from,
-                anim;
+                anim,
+                easing;
 
-            if(_.isObject(_duration)) {
+            if (_.isObject(_duration)) {
                 _options = _duration;
                 _duration = _options.duration || 500;
             }
 
-            if(!from) {
+            if (!from) {
 
                 from = {};
 
@@ -307,7 +308,7 @@ define(['altair/facades/declare',
             anim = new tween.Tween(from).to(to, _duration).onUpdate(function (time) {
 
                 //they may be borrowing the animate for something other than view properties
-                if(setOnView) {
+                if (setOnView) {
 
                     _.each(from, function (value, key) {
                         lang.setObject(key, this[key], view);
@@ -322,11 +323,11 @@ define(['altair/facades/declare',
                 dfd.resolve(view);
             });
 
-            if(_options.easing) {
+            if (_options.easing) {
 
-                var easing = lang.getObject(_options.easing, false, tween.Easing);
+                easing = lang.getObject(_options.easing, false, tween.Easing);
 
-                if(easing) {
+                if (easing) {
                     anim.easing(easing);
                 }
 
