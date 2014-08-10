@@ -23,6 +23,7 @@ define(['altair/facades/declare',
         },
 
         step:  function (view, time) {
+
             //I cant seem to initialize this property in startup. a little help?
             this.lastFrame = this.lastFrame || {
                 top: 0,

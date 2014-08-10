@@ -183,7 +183,7 @@ define(['altair/facades/declare',
                 }
 
                 if (!view) {
-                    console.log(this + ' has undefined subview ', this._subViews.length);
+//                    console.log(this + ' has undefined subview ', this._subViews.length);
                 }
 
             }, this);
