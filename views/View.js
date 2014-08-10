@@ -64,12 +64,16 @@ define(['altair/facades/declare',
             }
 
             _.each(this._animators, function (anim) {
-                anim.update(time);
+                if (anim) {
+                    anim.update(time);
+                }
             });
 
 
             _.each(this._behaviors, function (behavior) {
-                behavior.step(time);
+                if (behavior) {
+                    behavior.step(time);
+                }
             }, this);
 
         },
@@ -358,13 +362,13 @@ define(['altair/facades/declare',
 
         teardown: function () {
 
+            this._animators = null;
             this.removeFromSuperView();
 
             this.deferred = this.all(_.map(this._behaviors, function (b) {
                 return b.teardown ? b.teardown() : null;
             }));
 
-            this._animators = null;
 
             return this.inherited(arguments);
         }
