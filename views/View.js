@@ -24,6 +24,7 @@ define(['altair/facades/declare',
         superView:          null,
         autorestoreContext: true,
         vc:                 null,       //set by the creating view controller
+        hidden:             false,
 
         _subViews:          null,
         _animators:         null,
@@ -40,9 +41,9 @@ define(['altair/facades/declare',
             this._behaviors = [];
 
             this.frame = {
-                left: 0,
-                top: 0,
-                width: 0,
+                left:   0,
+                top:    0,
+                width:  0,
                 height: 0
             };
 
@@ -53,6 +54,10 @@ define(['altair/facades/declare',
 
         willRender: function (context, time) {
 
+            if (this.hidden) {
+                return;
+            }
+
             if (this.autorestoreContext) {
                 //so we don't interfere with anyone else' drawing commands. (as a result, you must call context.restore() when you're done with the.
                 context.save();
@@ -62,15 +67,18 @@ define(['altair/facades/declare',
                 anim.update(time);
             });
 
+
             _.each(this._behaviors, function (behavior) {
                 behavior.step(time);
             }, this);
-
 
         },
 
         render: function (context, time) {
 
+            if (this.hidden) {
+                return;
+            }
 
             var drawBorder  = false,
                 frame       = this.globalFrame();
@@ -157,6 +165,10 @@ define(['altair/facades/declare',
 
 
         didRender: function (context, time) {
+
+            if (this.hidden) {
+                return;
+            }
 
             _.each(this._subViews, function (view) {
 
