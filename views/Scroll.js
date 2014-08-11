@@ -26,7 +26,7 @@ define(['altair/facades/declare',
                 this.addSubView(view);
                 this.contentView = view;
 
-                if(this.contentHeight) {
+                if (this.contentHeight) {
                     this.contentView.frame.height = this.contentHeight;
                     delete this.contentHeight;
                 }
@@ -106,6 +106,7 @@ define(['altair/facades/declare',
             this.contentView.frame = this.calculatedContentFrame();
             this.inherited(arguments);
         }
+
 
 
     });
