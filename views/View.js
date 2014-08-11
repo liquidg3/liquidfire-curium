@@ -369,7 +369,6 @@ define(['altair/facades/declare',
                 return b.teardown ? b.teardown() : null;
             }));
 
-
             return this.inherited(arguments);
         }
 

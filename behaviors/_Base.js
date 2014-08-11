@@ -45,7 +45,9 @@ define(['altair/facades/declare',
         setView: function (view) {
             this.view = view;
             return this;
-        }
+        },
+
+        teardown: function () {}
 
     });
 

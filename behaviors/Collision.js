@@ -34,87 +34,90 @@ define(['altair/facades/declare',
                 angleOfIncidence,
                 angleOfReflection;
 
-            //detect collisions with other views of this namespace.
-            _.each(this.registry[this.group], function (collision) {
+            if (this.lastFrame) {
 
-                var v = collision.view,
-                    collisionPoint,
-                    lastPosition,
-                    thisPosition,
-                    collisionData,
-                    directionCoords;
+                //detect collisions with other views of this namespace.
+                _.each(this.registry[this.group], function (collision) {
 
-                if (v && v !== view && !v.hidden && v.superView) {
+                    var v = collision.view,
+                        collisionPoint,
+                        lastPosition,
+                        thisPosition,
+                        collisionData,
+                        directionCoords;
 
-                    collisionPoint = this.framesOverlap(view.frame, v.frame);
+                    if (v && v !== view && !v.hidden && v.superView) {
 
-                    if (collisionPoint) {
-                        //calculate angle of incidence and angle of reflection here,
+                        collisionPoint = this.framesOverlap(view.frame, v.frame);
 
-                        lastPosition = {
-                            x: this.lastFrame.left,
-                            y: this.lastFrame.top
+                        if (collisionPoint) {
+                            //calculate angle of incidence and angle of reflection here,
 
-                        };
+                            lastPosition = {
+                                x: this.lastFrame.left,
+                                y: this.lastFrame.top
+                            };
 
-                        thisPosition = {
-                            x: view.frame.left,
-                            y: view.frame.top
+                            thisPosition = {
+                                x: view.frame.left,
+                                y: view.frame.top
 
-                        };
+                            };
 
-                        angleOfIncidence = this.angle(lastPosition, thisPosition);
-                        //angleOfReflection = (angleOfIncidence - 180);      //flip then invert the angle of incidence to create our angle of reflection suggestion.
+                            angleOfIncidence = this.angle(lastPosition, thisPosition);
+                            //angleOfReflection = (angleOfIncidence - 180);      //flip then invert the angle of incidence to create our angle of reflection suggestion.
 
-                        directionCoords = {
-                            x: Math.cos(angleOfIncidence * (Math.PI / 180)) * 2,
-                            y: Math.sin(angleOfIncidence * (Math.PI / 180)) * 2
-                        };
+                            directionCoords = {
+                                x: Math.cos(angleOfIncidence * (Math.PI / 180)) * 2,
+                                y: Math.sin(angleOfIncidence * (Math.PI / 180)) * 2
+                            };
 
-                        if (collisionPoint.axis.x) {
-                            directionCoords.x = -directionCoords.x;
-                        }
+                            if (collisionPoint.axis.x) {
+                                directionCoords.x = -directionCoords.x;
+                            }
 
-                        if (collisionPoint.axis.y) {
-                            directionCoords.y = -directionCoords.y;
-                        }
+                            if (collisionPoint.axis.y) {
+                                directionCoords.y = -directionCoords.y;
+                            }
 
-                        angleOfReflection = this.angle({ x: 0, y: 0 }, directionCoords);
+                            angleOfReflection = this.angle({ x: 0, y: 0 }, directionCoords);
 
-                        //reset view to last known non-colliding position
-                        view.frame.left = lastPosition.x;
-                        view.frame.top  = lastPosition.y;
+                            //reset view to last known non-colliding position
+//                            view.frame.left = lastPosition.x;
+//                            view.frame.top  = lastPosition.y;
 
-                        collisionData = {
-                            view:               v,
-                            point:              collisionPoint,
-                            angleOfReflection:  angleOfReflection,
-                            angleOfIncidence:   angleOfIncidence,
-                            time:               time,
-                            behavior:           collision
-                        };
-
-                        collisions.push(collisionData);
-
-                        //if the collided behavior is not calculating, lets emit the event to its view
-                        if (!collision.calculate) {
-
-                            v.emit('collision', {
-                                collisions:         [collisionData],
-                                view:               this.view,
+                            collisionData = {
+                                view:               v,
+                                point:              collisionPoint,
                                 angleOfReflection:  angleOfReflection,
-                                angleOfIncidence:   angleOfIncidence
-                            });
+                                angleOfIncidence:   angleOfIncidence,
+                                time:               time,
+                                behavior:           collision
+                            };
+
+                            collisions.push(collisionData);
+
+                            //if the collided behavior is not calculating, lets emit the event to its view
+                            if (!collision.calculate) {
+//
+                                v.emit('collision', {
+                                    collisions:         [collisionData],
+                                    view:               this.view,
+                                    angleOfReflection:  angleOfReflection,
+                                    angleOfIncidence:   angleOfIncidence
+                                });
+
+
+                            }
 
 
                         }
-
 
                     }
 
-                }
+                }, this);
+            }
 
-            }, this);
 
 
             //do we have collisions? emit them!
