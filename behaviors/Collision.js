@@ -9,6 +9,7 @@ define(['altair/facades/declare',
         group:          null,
         registry:       {},
         view:           null,
+        enabled:        true,
 
         constructor: function (options) {
 
@@ -24,6 +25,8 @@ define(['altair/facades/declare',
         },
 
         step: function (time) {
+            if (!this.enabled) { return }
+
 
             if (!this.calculate) {
                 return;
@@ -49,47 +52,48 @@ define(['altair/facades/declare',
                     collisionPoint = this.framesOverlap(view.frame, v.frame);
 
                     if (collisionPoint) {
+
                         //calculate angle of incidence and angle of reflection here,
 
-                        lastPosition = {
-                            x: this.lastFrame.left,
-                            y: this.lastFrame.top
+                        //lastPosition = {
+                        //    x: this.lastFrame.left,
+                        //    y: this.lastFrame.top
+//
+  //                      };
 
-                        };
+//                        thisPosition = {
+  //                          x: view.frame.left,
+    //                        y: view.frame.top
+//
+  //                      };
 
-                        thisPosition = {
-                            x: view.frame.left,
-                            y: view.frame.top
-
-                        };
-
-                        angleOfIncidence = this.angle(lastPosition, thisPosition);
+                        //angleOfIncidence = this.angle(lastPosition, thisPosition);
                         //angleOfReflection = (angleOfIncidence - 180);      //flip then invert the angle of incidence to create our angle of reflection suggestion.
 
-                        directionCoords = {
-                            x: Math.cos(angleOfIncidence * (Math.PI / 180)) * 2,
-                            y: Math.sin(angleOfIncidence * (Math.PI / 180)) * 2
-                        };
+                        //directionCoords = {
+                        //    x: Math.cos(angleOfIncidence * (Math.PI / 180)) * 2,
+                        //    y: Math.sin(angleOfIncidence * (Math.PI / 180)) * 2
+                        //};
 
-                        if (collisionPoint.axis.x) {
-                            directionCoords.x = -directionCoords.x;
-                        }
+                        //if (collisionPoint.axis.x) {
+                        //    directionCoords.x = -directionCoords.x;
+                        //}
 
-                        if (collisionPoint.axis.y) {
-                            directionCoords.y = -directionCoords.y;
-                        }
+                        //if (collisionPoint.axis.y) {
+                        //    directionCoords.y = -directionCoords.y;
+                        //}
 
-                        angleOfReflection = this.angle({ x: 0, y: 0 }, directionCoords);
+                        //angleOfReflection = this.angle({ x: 0, y: 0 }, directionCoords);
 
                         //reset view to last known non-colliding position
-                        view.frame.left = lastPosition.x;
-                        view.frame.top  = lastPosition.y;
+                        //view.frame.left = lastPosition.x;
+                        //view.frame.top  = lastPosition.y;
 
                         collisionData = {
                             view:               v,
                             point:              collisionPoint,
-                            angleOfReflection:  angleOfReflection,
-                            angleOfIncidence:   angleOfIncidence,
+                            //angleOfReflection:  angleOfReflection,
+                            //angleOfIncidence:   angleOfIncidence,
                             time:               time,
                             behavior:           collision
                         };
@@ -102,8 +106,9 @@ define(['altair/facades/declare',
                             v.emit('collision', {
                                 collisions:         [collisionData],
                                 view:               this.view,
-                                angleOfReflection:  angleOfReflection,
-                                angleOfIncidence:   angleOfIncidence
+                                collisionPoint:     collisionPoint
+                                //angleOfReflection:  angleOfReflection,
+                                //angleOfIncidence:   angleOfIncidence
                             });
 
 
@@ -122,9 +127,9 @@ define(['altair/facades/declare',
 
                 view.emit('collision', {
                     collisions: collisions,
-                    view: view,
-                    angleOfReflection:  angleOfReflection,
-                    angleOfIncidence:   angleOfIncidence
+                    view: view
+                    //angleOfReflection:  angleOfReflection,
+                    //angleOfIncidence:   angleOfIncidence
                 });
 
             }
@@ -176,7 +181,7 @@ define(['altair/facades/declare',
                 y: view2.top + (view2.height / 2)
             };
 
-            //@tod: account for frame size ratio, this collision point wont work for frames of the differing size
+            //@tod0: account for frame size ratio, this collision point wont work for frames of the differing size
             return {
                 x: (view1CenterPoint.x + view2CenterPoint.x) / 2,
                 y: (view1CenterPoint.y + view2CenterPoint.y) / 2,
@@ -200,6 +205,14 @@ define(['altair/facades/declare',
             ys = ys * ys;
 
             return Math.sqrt(xs + ys);
+        },
+
+        debounceDuration: function (durationMilliseconds) {
+            this.enabled = false;
+
+            setTimeout(function () {
+                this.enabled = true;
+            }.bind(this), durationMilliseconds);
         }
 
     });
