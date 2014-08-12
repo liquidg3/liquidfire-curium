@@ -38,19 +38,15 @@ define(['altair/facades/declare',
                 delegate: this
             });
 
-            this.deferred = this.all({
-                view: this.forgeView({
-                    frame: {
-                        left:   0,
-                        top:    0,
-                        width:  this.canvas.width,
-                        height: this.canvas.height
-                    }
-                })
-            }).then(function (dependencies) {
-                    declare.safeMixin(this, dependencies);
-                    return this;
-                }.bind(this));
+            this.view = this.forgeView({
+                frame: {
+                    left:   0,
+                    top:    0,
+                    width:  this.canvas.width,
+                    height: this.canvas.height
+                }
+            });
+
 
             return this.inherited(arguments);
         },
@@ -105,7 +101,7 @@ define(['altair/facades/declare',
             _options.canvas  = this.canvas;
             _options.vc      = this;
 
-            return this.forge(path, _options);
+            return this.forgeSync(path, _options);
 
         },
 
@@ -124,13 +120,11 @@ define(['altair/facades/declare',
 
             }
 
-
-
             _options.context = this.context;
             _options.canvas  = this.canvas;
             _options.vc      = this;
 
-            return this.forge(path, _options);
+            return this.forgeSync(path, _options);
 
 
         },

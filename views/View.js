@@ -17,8 +17,8 @@ define(['altair/facades/declare',
 
         frame:              null,
         backgroundColor:    '#FFF',
-        borderWidth:        0,          //implicit pixel type
-        borderRadius:       0,          //implicit pixel type
+        borderWidth:        0,          //in pixels
+        borderRadius:       0,          //in pixels
         clipping:           false,
         alpha:              1,
         superView:          null,
@@ -77,7 +77,7 @@ define(['altair/facades/declare',
             }, this);
 
             _.each(this._subViews, function (view) {
-                if(view) {
+                if (view) {
                     view.alpha -= 1 - this.alpha;
                 }
             }, this);
@@ -171,6 +171,11 @@ define(['altair/facades/declare',
                 context.stroke();
             }
 
+        },
+
+        //keep us deferred free
+        startup: function () {
+            return this;
         },
 
 
@@ -377,11 +382,11 @@ define(['altair/facades/declare',
             this._animators = null;
             this.removeFromSuperView();
 
-            this.deferred = this.all(_.map(this._behaviors, function (b) {
+            _.map(this._behaviors, function (b) {
                 return b.teardown ? b.teardown() : null;
-            }));
+            });
 
-            return this.inherited(arguments);
+            return this;
         }
 
     });

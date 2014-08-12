@@ -84,7 +84,9 @@ define(['altair/facades/declare',
 
             all = _.map(choices, function (value, key) {
 
-                var _options = _.cloneDeep(options);
+                var _options = _.cloneDeep(options),
+                    labelView;
+
                 _options.text = value;
                 _options.selectValue = key;
                 _options.frame.top = top;
@@ -101,14 +103,10 @@ define(['altair/facades/declare',
                 this.contentView.frame.width = Math.max(this.contentView.frame.width, _options.frame.left + _options.frame.width);
                 this.contentView.frame.height = Math.max(this.contentView.frame.height, _options.frame.top + _options.frame.height);
 
-                return this.vc.forgeView('Label', _options).then(function (v) {
+                this._choiceViews[key] = labelView = this.vc.forgeView('Label', _options);
+                this.addSubView(labelView);
 
-                    this.addSubView(v);
-                    this._choiceViews[key] = v;
-
-                    return v;
-
-                }.bind(this));
+                return labelView;
 
 
             }, this);

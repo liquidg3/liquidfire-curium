@@ -13,21 +13,13 @@ define(['altair/facades/declare',
 
 
         image:   null,
+        imagePath: '',
         startup: function (options) {
 
             var _options = options || this.options || {};
 
             if (_options.image) {
-
-                this.deferred = this.loadImage(_options.image).then(function (img) {
-
-                    this.image          = img;
-                    this.frame.width    = img.width;
-                    this.frame.height   = img.height;
-
-                    return this;
-
-                }.bind(this));
+                this.imagePath = _options.image;
             }
 
             //mixin options
@@ -37,14 +29,22 @@ define(['altair/facades/declare',
 
         loadImage: function (path) {
 
-            return this.promise(fs, 'readFile', this.vc.resolvePath(path)).then(function (data) {
+            return this.promise(fs, 'readFile', this.vc.resolvePath(path || this.imagePath)).then(function (data) {
 
                 var img = new Canvas.Image();
                 img.src = data;
 
-                return img;
+                this.image          = img;
 
-            }).otherwise(function (err) {
+                //we have no size yet
+                if (this.frame.width === 0) {
+                    this.frame.width    = img.width;
+                    this.frame.height   = img.height;
+                }
+
+                return this;
+
+            }.bind(this)).otherwise(function (err) {
                 console.log('image load failed');
                 console.log(err.stack);
             });
@@ -55,7 +55,9 @@ define(['altair/facades/declare',
 
             this.inherited(arguments);
 
-            context.drawImage(this.image, this.frame.left, this.frame.top);
+            if (this.image) {
+                context.drawImage(this.image, this.frame.left, this.frame.top);
+            }
 
         }
 

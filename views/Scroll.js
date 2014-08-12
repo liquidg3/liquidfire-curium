@@ -18,22 +18,16 @@ define(['altair/facades/declare',
 
         startup: function () {
 
-            this.deferred = this.vc.forgeView({
+            this.contentView = this.forgeSync({
                 frame: _.clone(this.frame),
                 backgroundColor: 'transparent'
-            }).then(function (view) {
+            });
 
-                this.addSubView(view);
-                this.contentView = view;
-
-                if (this.contentHeight) {
-                    this.contentView.frame.height = this.contentHeight;
-                    delete this.contentHeight;
-                }
-
-                return this;
-
-            }.bind(this));
+            this.addSubView(this.contentView);
+            if (this.contentHeight) {
+                this.contentView.frame.height = this.contentHeight;
+                delete this.contentHeight;
+            }
 
             return this.inherited(arguments);
         },
