@@ -13,6 +13,7 @@ define(['altair/facades/declare',
 
 
         image:   null,
+        _imageCache: {},
         imagePath: '',
         startup: function (options) {
 
@@ -29,15 +30,34 @@ define(['altair/facades/declare',
 
         loadImage: function (path) {
 
-            return this.promise(fs, 'readFile', this.vc.resolvePath(path || this.imagePath)).then(function (data) {
+            var _path = this.vc.resolvePath(path || this.imagePath);
+
+            if (this._imageCache[_path]) {
+
+                this.image          = this._imageCache[_path];
+
+                //we have no size yet
+                if (!this.frame.width) {
+                    this.frame.width    = this.image.width;
+                    this.frame.height   = this.image.height;
+                }
+
+                var dfd = new this.Deferred();
+                dfd.resolve(this);
+                return dfd;
+
+            }
+
+            return this.promise(fs, 'readFile', _path).then(function (data) {
 
                 var img = new Canvas.Image();
                 img.src = data;
 
-                this.image          = img;
+                this.image              = img;
+                this._imageCache[_path] = img;
 
                 //we have no size yet
-                if (this.frame.width === 0) {
+                if (!this.frame.width) {
                     this.frame.width    = img.width;
                     this.frame.height   = img.height;
                 }

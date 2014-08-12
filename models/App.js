@@ -58,12 +58,13 @@ define(['altair/facades/declare',
                 type: 'curium-viewcontroller',
                 foundry: function (Class, options, config) {
 
-                    return config.defaultFoundry(Class, options, config).then(function (controller) {
-                        controller.dir = dir;
-                        return controller;
-                    });
+                    var controller = config.defaultFoundry(Class, options, config);
+                    controller.dir = dir;
+
+                    return controller;
 
                 }
+
             });
 
         },
