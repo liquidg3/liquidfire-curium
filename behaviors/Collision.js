@@ -5,12 +5,13 @@ define(['altair/facades/declare',
 
     return declare([_Base], {
 
-        calculate:      false,
-        group:          null,
-        registry:       {},
-        view:           null,
-        enabled:        true,
+        calculate:        false,
+        group:            null,
+        registry:         {},
+        view:             null,
+        enabled:          true,
         debounceDuration: 50,
+        precision: 4,
         constructor: function (options) {
 
             //add our self to the collision registry
@@ -24,103 +25,145 @@ define(['altair/facades/declare',
 
         },
 
+
+
+
+
         step: function (time) {
+
+            var lastPosition,
+                currentPosition,
+                nextPosition,
+                currentDirection,
+                collisionData = [],
+                view = this.view;
+
+
+
+            if (!this.lastFrame) {
+                return this.inherited(arguments);
+            }
 
             if (!this.enabled) {
                 return;
             }
 
+            //@todo: test that removing this check and it's related property doesnt break anything else
             if (!this.calculate) {
                 return;
             }
 
-            var collisions  = [],
-                view        = this.view,
-                angleOfIncidence,
-                angleOfReflection;
 
-            //detect collisions with other views of this namespace.
+            lastPosition = {
+                x: this.lastFrame.left,
+                y: this.lastFrame.top
+
+            };
+
+            currentPosition = {
+                x: view.frame.left,
+                y: view.frame.top
+
+            };
+
+            nextPosition = {
+                x: currentPosition.x + (currentPosition.x - lastPosition.x),
+                y: currentPosition.y + (currentPosition.y - lastPosition.y)
+
+            };
+
+            currentDirection = {
+                x: nextPosition.x - lastPosition.x,  //>0 means right
+                y: nextPosition.y - lastPosition.y   //>0 means down
+
+            };
+//console.log('this frame', view.frame);
+//console.log('lastPosition',lastPosition);
+//console.log('currentPosition', currentPosition);
+//console.log('nextPosition', nextPosition);
+
             _.each(this.registry[this.group], function (collision) {
 
-                //no freaking clue
-                if (!collision) {
-                    return;
-                }
+                if (!collision) {return;} //paddle may dissapear just after collision?
 
                 var v = collision.view,
-                    collisionPoint,
-                    lastPosition,
-                    thisPosition,
-                    collisionData,
-                    directionCoords;
+                    collisionX,
+                    collisionY;
 
                 if (v && v !== view && !v.hidden && v.superView) {
 
-                    collisionPoint = this.framesOverlap(view.frame, v.frame);
+                    collisionX = undefined;
+                    collisionY = undefined;
 
-                    if (collisionPoint) {
+                    //moving from left to right
+                    if (currentDirection.x > 0 && lastPosition.x < v.frame.left && currentPosition.x + view.frame.width > v.frame.left) {
+                        collisionX = v.frame.left;
+//console.log('collision moving right');
+                    }
 
-                        //calculate angle of incidence and angle of reflection here,
+                    //moving right to left
+                    if (currentDirection.x < 0 && lastPosition.x + view.frame.width > v.frame.left + v.frame.width && currentPosition.x < v.frame.left + v.frame.width) {
+                        collisionX = v.frame.left + v.frame.width;
+//console.log('collision moving left');
+                    }
 
-                        //lastPosition = {
-                        //    x: this.lastFrame.left,
-                        //    y: this.lastFrame.top
-//
-  //                      };
 
-//                        thisPosition = {
-  //                          x: view.frame.left,
-    //                        y: view.frame.top
-//
-  //                      };
+                    //a potential collision
+                    if (collisionX && view.frame.top + view.frame.height > v.frame.top && view.frame.top < v.frame.top + v.frame.height) {
+//console.log('a potential collision, tracing it now against', {
+//    x: v.frame.left,
+//    y: v.frame.top,
+///    width: v.frame.width,
+//    height: v.frame.height
+//});
 
-                        //angleOfIncidence = this.angle(lastPosition, thisPosition);
-                        //angleOfReflection = (angleOfIncidence - 180);      //flip then invert the angle of incidence to create our angle of reflection suggestion.
+                        for (var step = 0; step < this.precision; step++) {
+                            var rect1 = {
+                                x: currentPosition.x + ((currentPosition.x - lastPosition.x) * (step/this.precision)),
+                                y: currentPosition.y + ((currentPosition.y - lastPosition.y) * (step/this.precision)),
+                                width: view.frame.width,
+                                height: view.frame.height
 
-                        //directionCoords = {
-                        //    x: Math.cos(angleOfIncidence * (Math.PI / 180)) * 2,
-                        //    y: Math.sin(angleOfIncidence * (Math.PI / 180)) * 2
-                        //};
+                            };
 
-                        //if (collisionPoint.axis.x) {
-                        //    directionCoords.x = -directionCoords.x;
-                        //}
+//console.log( 'rect1', rect1 );
 
-                        //if (collisionPoint.axis.y) {
-                        //    directionCoords.y = -directionCoords.y;
-                        //}
+                            var rect2 = {
+                                x: v.frame.left,
+                                y: v.frame.top,
+                                width: v.frame.width,
+                                height: v.frame.height
+                            };
 
-                        //angleOfReflection = this.angle({ x: 0, y: 0 }, directionCoords);
+//console.log( this.rectsOverlap(rect1, rect2));
 
-                        //reset view to last known non-colliding position
-                        //view.frame.left = lastPosition.x;
-                        //view.frame.top  = lastPosition.y;
+                            if (this.rectsOverlap(rect1, rect2)) {
+                                var thisCollision = {
+                                    view:               v,
+                                    point:              {x: rect1.x, y: rect1.y},
+                                    velocity:           {x: currentDirection.x, y: currentDirection.y},
+                                    time:               time,
+                                    behavior:           collision
+                                };
 
-                        collisionData = {
-                            view:               v,
-                            point:              collisionPoint,
-                            //angleOfReflection:  angleOfReflection,
-                            //angleOfIncidence:   angleOfIncidence,
-                            time:               time,
-                            behavior:           collision
-                        };
+                                collisionData.push(thisCollision);
 
-                        collisions.push(collisionData);
+                                v.emit('collision', {
+                                    collisions:         [{
+                                        view:               this.view,
+                                        point:              {x: rect2.x, y: rect2.y},
+                                        velocity:           {x: 0, y: 0},
+                                        time:               time,
+                                        behavior:           collision
+                                    }],
+                                    view:               this.view
+                                });
 
-                        //if the collided behavior is not calculating, lets emit the event to its view
-                        if (!collision.calculate) {
+                                break;
 
-                            v.emit('collision', {
-                                collisions:         [collisionData],
-                                view:               this.view,
-                                collisionPoint:     collisionPoint
-                                //angleOfReflection:  angleOfReflection,
-                                //angleOfIncidence:   angleOfIncidence
-                            });
-
+                            }
 
                         }
-
 
                     }
 
@@ -129,30 +172,18 @@ define(['altair/facades/declare',
             }, this);
 
 
-            //do we have collisions? emit them!
-            if (collisions.length) {
-
+            if (collisionData.length) {
                 view.emit('collision', {
-                    collisions: collisions,
-                    view: view
-                    //angleOfReflection:  angleOfReflection,
-                    //angleOfIncidence:   angleOfIncidence
+                    collisions:         collisionData,
+                    view:               this.view
+
                 });
-
-                //we won't get hit again for this.debounceDuration milis
-                this.enabled = false;
-
-                setTimeout(function () {
-                    this.enabled = true;
-                }.bind(this), this.debounceDuration);
-
 
             }
 
-
             return this.inherited(arguments);
-
         },
+
 
         teardown: function () {
 
@@ -166,40 +197,40 @@ define(['altair/facades/declare',
 
         },
 
-        framesOverlap: function (view1, view2) {
-            var view1CenterPoint,
-                view2CenterPoint,
+        rectsOverlap: function (rect1, rect2) {
+            var rect1CenterPoint,
+                rect2CenterPoint,
                 axis = {x: false, y: false};
 
 
-            if (view1.left + view1.width < view2.left || view1.left > view2.left + view2.width || view1.top + view1.height < view2.top || view1.top > view2.top + view2.height) {
+            if (rect1.x + rect1.width < rect2.x || rect1.x > rect2.x + rect2.width || rect1.y + rect1.height < rect2.y || rect1.y > rect2.y + rect2.height) {
                 return null;
             }
 
 
             //rethink this...   if we are within the horizontal bounds of the colliding frame, then this must be a vertical collisison
-            if (view1.left >= view2.left && view1.left + view1.width <= view2.left + view2.width) {
+            if (rect1.x >= rect2.x && rect1.x + rect1.width <= rect2.x + rect2.width) {
                 axis.y = true;
             }
 
-            if (view1.top >= view2.top && view1.top + view1.height <= view2.top + view2.height) {
+            if (rect1.y >= rect2.y && rect1.y + rect1.height <= rect2.y + rect2.height) {
                 axis.x = true;
             }
 
-            view1CenterPoint = {
-                x: view1.left + (view1.width / 2),
-                y: view1.top + (view1.height / 2)
+            rect1CenterPoint = {
+                x: rect1.x + (rect1.width / 2),
+                y: rect1.y + (rect1.height / 2)
             };
 
-            view2CenterPoint = {
-                x: view2.left + (view2.width / 2),
-                y: view2.top + (view2.height / 2)
+            rect2CenterPoint = {
+                x: rect2.x + (rect2.width / 2),
+                y: rect2.y + (rect2.height / 2)
             };
 
             //@tod0: account for frame size ratio, this collision point wont work for frames of the differing size
             return {
-                x: (view1CenterPoint.x + view2CenterPoint.x) / 2,
-                y: (view1CenterPoint.y + view2CenterPoint.y) / 2,
+                x: (rect1CenterPoint.x + rect2CenterPoint.x) / 2,
+                y: (rect1CenterPoint.y + rect2CenterPoint.y) / 2,
                 axis: axis
             };
 
