@@ -20,7 +20,7 @@ define(['altair/facades/declare',
         view:   null,
 
         __coreViews: ['View', 'Image', 'Label', 'Scroll', 'Select', 'Cicrle'], //our view types
-        __coreBehaviors: ['Collision', 'Velocity'], //our behaviors
+        __coreBehaviors: ['Collision', 'Collision2', 'Velocity'], //our behaviors
 
 
         startup: function (options) {

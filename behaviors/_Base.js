@@ -5,7 +5,7 @@ define(['altair/facades/declare',
 ], function (declare,
              _DeferredMixin,
              _AssertMixin,
-             lodash) {
+             _) {
 
     return declare([_DeferredMixin, _AssertMixin], {
 
@@ -24,20 +24,7 @@ define(['altair/facades/declare',
 
         step:  function (view, time) {
 
-            //I cant seem to initialize this property in startup. a little help?
-            this.lastFrame = this.lastFrame || {
-                top: 0,
-                left: 0,
-                width: 0,
-                height: 0
-            };
-
-            //calculate the last frame so that we can use it in our behaviors
-            this.lastFrame.left = this.view.frame.left;
-            this.lastFrame.top = this.view.frame.top;
-            this.lastFrame.width = this.view.frame.width;
-            this.lastFrame.height = this.view.frame.height;
-
+            this.lastFrame = _.clone(this.view.frame);
             this.lastTime  = time;
 
         },
