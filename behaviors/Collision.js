@@ -159,6 +159,13 @@ define(['altair/facades/declare',
                                     view:               this.view
                                 });
 
+                                this.enabled = false;
+
+                                setTimeout(function () {
+                                    this.enabled = true;
+
+                                }.bind(this), this.debounceDuration);
+
                                 break;
 
                             }
