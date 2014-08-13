@@ -10,7 +10,7 @@ define(['altair/facades/declare',
         labelOptions:       null,
         fadeOptions:        false,  //should options fade as they reach the edge
         selectionPressure:  0,      //0 to 1
-        selectionThreshold: 0.8,    //how much pressure must be applied to count as a valid selection?
+        selectionThreshold: 0.7,    //how much pressure must be applied to count as a valid selection?
         maxSelectionPull:   100,
         deferred:           null, //created on focus(), resolved on release()
 
@@ -21,6 +21,8 @@ define(['altair/facades/declare',
         startup: function (options) {
 
             var _options = options || this.options || {};
+
+            this.inherited(arguments);
 
             if (this.choices) {
                 this.setChoices(this.choices);
@@ -164,12 +166,16 @@ define(['altair/facades/declare',
 
         release: function () {
 
+            if(!this.deferred || this._releasing) {
+                return;
+            }
+
             this._releasing = true;
 
             this.__selected = this.selectedChoiceView();
 
             this.animate({
-                '__selected.frame.top': - 400,
+                '__selected.frame.top': - 200,
                 '__selected.alpha': 0
             }, 200).then(function () {
 
@@ -193,7 +199,8 @@ define(['altair/facades/declare',
             this.deferred = new this.Deferred();
 
             _.each(this._choiceViews, function (view) {
-                view.frame.top = 0;
+                view.frame.top  = 0;
+                view.alpha      = 1;
             });
 
             return this.deferred;

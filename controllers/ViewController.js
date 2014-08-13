@@ -101,7 +101,7 @@ define(['altair/facades/declare',
             _options.canvas  = this.canvas;
             _options.vc      = this;
 
-            return this.forgeSync(path, _options);
+            return this.forgeSync(path, _options, { parent: this });
 
         },
 
@@ -124,7 +124,7 @@ define(['altair/facades/declare',
             _options.canvas  = this.canvas;
             _options.vc      = this;
 
-            return this.forgeSync(path, _options);
+            return this.forgeSync(path, _options, { parent: this });
 
 
         },
@@ -138,7 +138,7 @@ define(['altair/facades/declare',
                 path = 'liquidfire:Curium/audio/' + path;
             }
 
-            return this.forge(path, options);
+            return this.forge(path, options, { parent: this });
 
         }
 

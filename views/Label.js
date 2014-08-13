@@ -94,9 +94,6 @@ define(['altair/facades/declare',
 
             context.fillText(this.text, textPositionX, textPositionY);
 
-            // Undo the clipping mask
-//            context.restore();
-
         }
 
     });

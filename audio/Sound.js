@@ -91,6 +91,7 @@ define(['altair/facades/declare',
                 speaker.on('close', this.hitch(dfd, 'resolve'));
 
             } else {
+
                 stream = fs.createReadStream(this.parent.resolvePath(this.file));
 
                 stream.pipe(this.decoder).on('format', function (format) {
