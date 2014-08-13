@@ -22,20 +22,13 @@ define(['altair/facades/declare',
 
             var _options = options || this.options || {};
 
-            return this.inherited(arguments).then(function () {
+            if (this.choices) {
+                this.setChoices(this.choices);
+            }
 
-                if (this.choices) {
-
-                    return this.setChoices(_options.choices).then(function () {
-                        return this;
-                    }.bind(this));
-
-                } else {
-                    return this;
-                }
+            return this;
 
 
-            }.bind(this));
         },
 
 
@@ -82,7 +75,7 @@ define(['altair/facades/declare',
 
             options.frame = mixin(frame, options.frame || {});
 
-            all = _.map(choices, function (value, key) {
+            _.each(choices, function (value, key) {
 
                 var _options = _.cloneDeep(options),
                     labelView;
@@ -100,8 +93,8 @@ define(['altair/facades/declare',
                 }
 
                 //grow our content frame
-                this.contentView.frame.width = Math.max(this.contentView.frame.width, _options.frame.left + _options.frame.width);
-                this.contentView.frame.height = Math.max(this.contentView.frame.height, _options.frame.top + _options.frame.height);
+                this.contentView.frame.width    = Math.max(this.contentView.frame.width, _options.frame.left + _options.frame.width);
+                this.contentView.frame.height   = Math.max(this.contentView.frame.height, _options.frame.top + _options.frame.height);
 
                 this._choiceViews[key] = labelView = this.vc.forgeView('Label', _options);
                 this.addSubView(labelView);
@@ -111,7 +104,7 @@ define(['altair/facades/declare',
 
             }, this);
 
-            return this.all(all);
+            return this;
 
         },
 
@@ -123,7 +116,7 @@ define(['altair/facades/declare',
                 context.translate(0, this.selectionPressure * this.maxSelectionPull);
             }
 
-            if(this.fadeOptions) {
+            if (this.fadeOptions) {
 
                 _.each(this._choiceViews, function (view, choice) {
 
@@ -133,7 +126,7 @@ define(['altair/facades/declare',
                         delta;
 
                     //distance will fade out starting at 300 and be gone by 900
-                    if(distance <= inner) {
+                    if (distance <= inner) {
                         alpha = 1;
                     } else if (distance >= outer) {
                         alpha = 0;
